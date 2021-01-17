@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import multiprocessing.pool
-import numbers
 from typing import (Any, Callable, Dict, List, Optional, Sequence, Text, Tuple, TypeVar, Union)
 
 import psutil  # type: ignore
@@ -66,7 +65,10 @@ def parfor(
     return result_list
 
 
-def show(x: numbers.Real) -> numbers.Real:
+Numeric = TypeVar('Numeric', int, float)
+
+
+def show(x: Numeric) -> Numeric:
     import time
     time.sleep(0.1)
     print(multiprocessing.current_process(), x)
@@ -77,8 +79,8 @@ def show(x: numbers.Real) -> numbers.Real:
 if __name__ == '__main__':
     import builtins
 
-    def mycallback(x: Union[numbers.Real, Captured_Exception[numbers.Real]]) -> None:
-        if isinstance(x, numbers.Real):
+    def mycallback(x: Union[Numeric, Captured_Exception[Numeric]]) -> None:
+        if isinstance(x, (int, float)):
             builtins.print('[{}]'.format(x))
 
     builtins.print(parfor(show, [(x, ) for x in range(10)], callback=mycallback))
