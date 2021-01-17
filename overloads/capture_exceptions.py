@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 from typing import (Any, Callable, Dict, Generic, List, Optional, Sequence, Tuple, Type, TypeVar,
                     Union)
 
@@ -19,10 +20,10 @@ class Captured_Exception(Generic[T]):
 
     def __init__(self, f: Callable[..., T], args: Tuple[Any, ...], kwargs: Dict[str, Any],
                  exception: BaseException):
-        self.f = f
-        self.args = args
-        self.kwargs = kwargs
-        self.exception = exception
+        self.f = copy.deepcopy(f)
+        self.args = copy.deepcopy(args)
+        self.kwargs = copy.deepcopy(kwargs)
+        self.exception = copy.deepcopy(exception)
 
     def __call__(self) -> T:
         assert self.f is not None
