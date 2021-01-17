@@ -55,7 +55,7 @@ def parfor(
     for idx, result, output in pool.imap_unordered(helper, helper_args_list):
         stdout(output)
         if isinstance(result, Captured_Exception):
-            stderr('[{}]: {}'.format(idx, result))
+            stderr('[{}]: {}\n'.format(idx, result))
         result_dict[idx] = result
     result_list = [result_dict[idx] for idx in range(len(args_list))]
     return result_list
