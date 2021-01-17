@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import multiprocessing.pool
+import numbers
 from typing import (Any, Callable, Dict, List, Optional, Sequence, Text, Tuple, TypeVar, Union)
 
 import psutil  # type: ignore
@@ -41,6 +42,7 @@ def parfor(
     f: Callable[..., T],
     args_list: Sequence[Tuple[Any]],
     *,
+    callback: Optional[Callable[[Union[T, Captured_Exception[T]]], None]] = None,
     print_out: Optional[Callable[[Text], None]] = None,
     print_err: Optional[Callable[[Text], None]] = None  # force line wrap
 ) -> List[Union[T, Captured_Exception[T]]]:
@@ -57,12 +59,14 @@ def parfor(
         print_out(output)
         if isinstance(result, Captured_Exception):
             print_err('[{}]: {}\n'.format(idx, result))
+        if callback is not None:
+            callback(result)
         result_dict[idx] = result
     result_list = [result_dict[idx] for idx in range(len(args_list))]
     return result_list
 
 
-def show(x: float) -> float:
+def show(x: numbers.Real) -> numbers.Real:
     import time
     time.sleep(0.1)
     print(multiprocessing.current_process(), x)
@@ -72,4 +76,9 @@ def show(x: float) -> float:
 
 if __name__ == '__main__':
     import builtins
-    builtins.print(parfor(show, [(x, ) for x in range(10)]))
+
+    def mycallback(x: Union[numbers.Real, Captured_Exception[numbers.Real]]) -> None:
+        if isinstance(x, numbers.Real):
+            builtins.print('[{}]'.format(x))
+
+    builtins.print(parfor(show, [(x, ) for x in range(10)], callback=mycallback))
