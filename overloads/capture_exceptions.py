@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from typing import (Any, Callable, Dict, Generic, Optional, Tuple, Type, TypeVar, Union)
+from typing import (Any, Callable, Dict, Generic, List, Optional, Sequence, Tuple, Type, TypeVar,
+                    Union)
 
 import pretty_errors  # type: ignore # noqa: F401
 
@@ -51,14 +52,27 @@ def capture_exceptions(f: Callable[..., T],
         return Captured_Exception(f, args, kwargs, e)
 
 
-Numeric = TypeVar('Numeric', int, float)
+def starmap(
+    f: Callable[..., T],
+    args: Sequence[Tuple[Any, ...]],
+    _exceptions_to_be_captured: ExceptionToBeCaptured_t = BaseException
+) -> List[Union[T, Captured_Exception[T]]]:
+    result_list: List[Union[T, Captured_Exception[T]]] = []
+    for idx, arg in enumerate(args):
+        result = capture_exceptions(f, *arg, _exceptions_to_be_captured=_exceptions_to_be_captured)
+        if isinstance(result, Captured_Exception):
+            print("[{}]: {}".format(idx, result))
+        result_list.append(result)
+    return result_list
+
 
 if __name__ == '__main__':
+
+    Numeric = TypeVar('Numeric', int, float)
 
     def square(x: Numeric) -> Numeric:
         return x * x
 
-    e = capture_exceptions(square, [], _types_of_exceptions_to_capture=Exception)
-    assert isinstance(e, Captured_Exception)
+    e = starmap(square, [(1, ), (0, ), (2, ), ([], ), ((), )],
+                _exceptions_to_be_captured=Exception)
     print(e)
-    print(capture_exceptions(square, 1))
