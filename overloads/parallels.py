@@ -4,7 +4,7 @@ import multiprocessing.pool
 from typing import (Any, Callable, Dict, List, Optional, Sequence, Tuple, TypeVar, Union)
 
 import psutil  # type: ignore
-from mypy_extensions import NamedArg
+from mypy_extensions import DefaultNamedArg
 
 from capture_exceptions import Captured_Exception, capture_exceptions
 
@@ -38,7 +38,7 @@ def parfor(
     f: Callable[..., T],
     args_list: Sequence[Tuple[Any]],
     *,
-    print: Callable[[str, NamedArg(str, 'end')], None] = builtins.print  # noqa: F821
+    print: Callable[[str, DefaultNamedArg(str, 'end')], None] = builtins.print  # noqa: F821
 ) -> List[Union[T, Captured_Exception[T]]]:
     if pool is None:
         launch_parpool()
@@ -48,7 +48,7 @@ def parfor(
     for idx, result, output in pool.imap_unordered(helper, helper_args_list):
         print(output, end='')
         if isinstance(result, Captured_Exception):
-            print('[{}]: {}\n'.format(idx, result), end='')
+            print('[{}]: {}'.format(idx, result))
         result_dict[idx] = result
     result_list = [result_dict[idx] for idx in range(len(args_list))]
     return result_list
