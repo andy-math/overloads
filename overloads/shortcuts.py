@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import datetime
+import math
 import pickle
-from typing import Any, Optional
+from typing import Any, Optional, Union
+
+import numpy
 
 
 def save(filename: str, object: Any) -> None:
@@ -23,3 +26,10 @@ def timestamp(*,
     timestr = time.strftime(fmt_cvrt)
     timestr = timestr.encode('ascii').decode('unicode_escape')
     return timestr
+
+
+def assertNoInfNaN(x: Union[float, numpy.ndarray[numpy.float64]]) -> None:
+    if isinstance(x, float):
+        assert math.isfinite(x)
+    else:
+        assert numpy.isfinite(x).all()  # type: ignore
