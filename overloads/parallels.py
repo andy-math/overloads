@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import builtins
 import multiprocessing.pool
 from typing import (Any, Callable, Dict, List, Optional, Sequence, Text, Tuple, TypeVar, Union)
 
@@ -34,28 +33,30 @@ def helper(
 
 
 def print_without_line_feed(*values: object) -> None:
+    import builtins
     builtins.print(*values, end='')
 
 
 def parfor(
-        f: Callable[..., T],
-        args_list: Sequence[Tuple[Any]],
-        *,
-        stdout: Optional[Callable[[Text], None]] = None,
-        stderr: Optional[Callable[[Text], None]] = None) -> List[Union[T, Captured_Exception[T]]]:
-    if stdout is None:
-        stdout = print_without_line_feed
-    if stderr is None:
-        stderr = stdout
+    f: Callable[..., T],
+    args_list: Sequence[Tuple[Any]],
+    *,
+    print_out: Optional[Callable[[Text], None]] = None,
+    print_err: Optional[Callable[[Text], None]] = None  # force line wrap
+) -> List[Union[T, Captured_Exception[T]]]:
+    if print_out is None:
+        print_out = print_without_line_feed
+    if print_err is None:
+        print_err = print_out
     if pool is None:
         launch_parpool()
         assert pool is not None
     helper_args_list = ((idx, f, args) for idx, args in enumerate(args_list))
     result_dict: Dict[int, Union[T, Captured_Exception[T]]] = {}
     for idx, result, output in pool.imap_unordered(helper, helper_args_list):
-        stdout(output)
+        print_out(output)
         if isinstance(result, Captured_Exception):
-            stderr('[{}]: {}\n'.format(idx, result))
+            print_err('[{}]: {}\n'.format(idx, result))
         result_dict[idx] = result
     result_list = [result_dict[idx] for idx in range(len(args_list))]
     return result_list
@@ -70,4 +71,5 @@ def show(x: float) -> float:
 
 
 if __name__ == '__main__':
+    import builtins
     builtins.print(parfor(show, [(x, ) for x in range(10)]))
