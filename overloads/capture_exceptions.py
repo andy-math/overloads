@@ -12,7 +12,7 @@ param_t = TypeVar('param_t')
 return_t = TypeVar('return_t')
 
 BaseException_t = Type[BaseException]
-ExceptionToBeCaptured_t = Union[BaseException_t, Tuple[BaseException_t]]
+Exceptions_t = Union[BaseException_t, Tuple[BaseException_t, ...]]
 
 
 class Captured_Exception(Generic[return_t]):
@@ -50,11 +50,14 @@ def capture_exceptions(
     f: Callable[[param_t], return_t],
     arg: param_t,
     *,
-    exceptions: ExceptionToBeCaptured_t = BaseException
+    catch: Exceptions_t = BaseException,
+    without: Exceptions_t = ()
 ) -> Union[return_t, Captured_Exception[return_t]]:
     try:
         return f(arg)
-    except exceptions as e:
+    except catch as e:
+        if isinstance(e, without):
+            raise e
         return Captured_Exception(f, (arg, ), {}, e)
 
 
@@ -62,11 +65,12 @@ def map(
     f: Callable[[param_t], return_t],
     args: Sequence[param_t],
     *,
-    exceptions: ExceptionToBeCaptured_t = BaseException
+    catch: Exceptions_t = BaseException,
+    without: Exceptions_t = ()
 ) -> List[Union[return_t, Captured_Exception[return_t]]]:
     result_list: List[Union[return_t, Captured_Exception[return_t]]] = []
     for idx, arg in enumerate(args):
-        result = capture_exceptions(f, arg, exceptions=exceptions)
+        result = capture_exceptions(f, arg, catch=catch, without=without)
         if isinstance(result, Captured_Exception):
             print("[{}]: {}".format(idx, result))
         result_list.append(result)
@@ -81,5 +85,5 @@ if __name__ == '__main__':
     def square(x: Numeric) -> Numeric:
         return x * x
 
-    e = map(square, [(1, ), (0, ), (2, ), (1.0, ), (2.0, )], exceptions=Exception)
+    e = map(square, [(1, ), (0, ), (2, ), (1.0, ), ([], )], catch=Exception)
     print(e)
