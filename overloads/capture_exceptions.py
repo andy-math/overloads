@@ -6,26 +6,29 @@ from typing import (Any, Callable, Dict, Generic, List, Optional, Sequence, Tupl
 
 import pretty_errors  # type: ignore # noqa: F401
 
-T = TypeVar('T')
+import tuplize
+
+param_t = TypeVar('param_t')
+return_t = TypeVar('return_t')
 
 BaseException_t = Type[BaseException]
 ExceptionToBeCaptured_t = Union[BaseException_t, Tuple[BaseException_t]]
 
 
-class Captured_Exception(Generic[T]):
-    f: Optional[Callable[..., T]]
+class Captured_Exception(Generic[return_t]):
+    f: Optional[Callable[..., return_t]]
     args: Tuple[Any, ...]
     kwargs: Dict[str, Any]
     exception: BaseException
 
-    def __init__(self, f: Callable[..., T], args: Tuple[Any, ...], kwargs: Dict[str, Any],
+    def __init__(self, f: Callable[..., return_t], args: Tuple[Any, ...], kwargs: Dict[str, Any],
                  exception: BaseException):
         self.f = copy.deepcopy(f)
         self.args = copy.deepcopy(args)
         self.kwargs = copy.deepcopy(kwargs)
         self.exception = copy.deepcopy(exception)
 
-    def __call__(self) -> T:
+    def __call__(self) -> return_t:
         assert self.f is not None
         return self.f(*self.args, **self.kwargs)
 
@@ -43,24 +46,27 @@ class Captured_Exception(Generic[T]):
         return fmtstr
 
 
-def capture_exceptions(f: Callable[..., T],
-                       *args: Any,
-                       _exceptions_to_be_captured: ExceptionToBeCaptured_t = BaseException,
-                       **kwargs: Any) -> Union[T, Captured_Exception[T]]:
+def capture_exceptions(
+    f: Callable[[param_t], return_t],
+    arg: param_t,
+    *,
+    exceptions: ExceptionToBeCaptured_t = BaseException
+) -> Union[return_t, Captured_Exception[return_t]]:
     try:
-        return f(*args, **kwargs)
-    except _exceptions_to_be_captured as e:
-        return Captured_Exception(f, args, kwargs, e)
+        return f(arg)
+    except exceptions as e:
+        return Captured_Exception(f, (arg, ), {}, e)
 
 
-def starmap(
-    f: Callable[..., T],
-    args: Sequence[Tuple[Any, ...]],
-    _exceptions_to_be_captured: ExceptionToBeCaptured_t = BaseException
-) -> List[Union[T, Captured_Exception[T]]]:
-    result_list: List[Union[T, Captured_Exception[T]]] = []
+def map(
+    f: Callable[[param_t], return_t],
+    args: Sequence[param_t],
+    *,
+    exceptions: ExceptionToBeCaptured_t = BaseException
+) -> List[Union[return_t, Captured_Exception[return_t]]]:
+    result_list: List[Union[return_t, Captured_Exception[return_t]]] = []
     for idx, arg in enumerate(args):
-        result = capture_exceptions(f, *arg, _exceptions_to_be_captured=_exceptions_to_be_captured)
+        result = capture_exceptions(f, arg, exceptions=exceptions)
         if isinstance(result, Captured_Exception):
             print("[{}]: {}".format(idx, result))
         result_list.append(result)
@@ -69,11 +75,11 @@ def starmap(
 
 if __name__ == '__main__':
 
-    Numeric = TypeVar('Numeric', int, float)
+    Numeric = Union[int, float]
 
+    @tuplize.tuplize_1
     def square(x: Numeric) -> Numeric:
         return x * x
 
-    e = starmap(square, [(1, ), (0, ), (2, ), ([], ), ((), )],
-                _exceptions_to_be_captured=Exception)
+    e = map(square, [(1, ), (0, ), (2, ), (1.0, ), (2.0, )], exceptions=Exception)
     print(e)
