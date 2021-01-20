@@ -85,5 +85,5 @@ if __name__ == '__main__':
     def square(x: Numeric) -> Numeric:
         return x * x
 
-    e = map(square, [(1, ), (0, ), (2, ), (1.0, ), ([], )], catch=Exception)
+    e = map(square, [(1, ), (0, ), (2, ), (1.0, ), (2.0, )], catch=Exception)
     print(e)
