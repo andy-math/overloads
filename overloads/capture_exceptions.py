@@ -4,8 +4,6 @@ import copy
 from typing import (Any, Callable, Dict, Generic, List, Optional, Sequence, Tuple, Type, TypeVar,
                     Union)
 
-import pretty_errors  # type: ignore # noqa: F401
-
 import tuplize
 
 param_t = TypeVar('param_t')
