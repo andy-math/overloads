@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import datetime
 import pickle
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import numpy
 
