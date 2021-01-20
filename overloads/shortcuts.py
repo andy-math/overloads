@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import datetime
-import math
 import pickle
 from typing import Any, Optional, Union
 
@@ -30,8 +29,5 @@ def timestamp(*,
     return timestr
 
 
-def assertNoInfNaN(x: Union[float, numpy.ndarray[numpy.float64]]) -> None:
-    if isinstance(x, float):
-        assert math.isfinite(x)
-    else:
-        assert numpy.isfinite(x).all()  # type: ignore
+def assertNoInfNaN(x: numpy.ndarray[numpy.float64]) -> None:
+    assert numpy.isfinite(x.flatten()).all()  # type: ignore
