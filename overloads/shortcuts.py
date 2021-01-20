@@ -30,4 +30,13 @@ def timestamp(*,
 
 
 def assertNoInfNaN(x: numpy.ndarray[numpy.float64]) -> None:
-    assert numpy.isfinite(x.flatten()).all()  # type: ignore
+    idx: numpy.ndarray[numpy.int64] = numpy.argwhere(numpy.isfinite(x))  # type: ignore
+    count = idx.shape[0]
+    assert count == 0, ('出现了Inf或NaN', idx)
+
+
+if __name__ == '__main__':
+    isfinite = numpy.isfinite  # type: ignore
+    assert not bool(isfinite(numpy.array([numpy.inf])))
+    assert not bool(isfinite(numpy.array([numpy.nan])))
+    assert numpy.isnan(numpy.sqrt(numpy.array([-1])))
