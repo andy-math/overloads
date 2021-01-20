@@ -1,4 +1,4 @@
-from functools import wraps
+from functools import wraps as _wraps
 from typing import Any as _Any
 from typing import Callable as _Callable
 from typing import Tuple as _Tuple
@@ -17,7 +17,7 @@ _return_t = _TypeVar('_return_t')
 
 
 def _tuplize_unsafe(f: _Callable[..., _return_t]) -> _Callable[[_Tuple[_Any, ...]], _return_t]:
-    @wraps(f)
+    @_wraps(f)
     def wrapper(args: _Tuple[_Any, ...]) -> _return_t:
         return f(*args)
 
