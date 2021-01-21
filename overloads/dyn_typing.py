@@ -211,7 +211,7 @@ class DepType(metaclass=_abc.ABCMeta):
     using: _Dict[int, SizeVar]
 
     @_abc.abstractmethod
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         pass
 
 
@@ -232,7 +232,7 @@ class NDArray(DepType):
             using.update(_get_using(s))
         self.using = using
 
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, _numpy.ndarray):
             return False
         if _numpy.isfortran(value) != self.isfortran:  # type: ignore
@@ -256,10 +256,10 @@ class Optional(DepType):
         self.dtype = dtype
         self.using = dtype.using
 
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         if value is None:
             return True
-        return self.dtype.isinstance(value)
+        return self.dtype._isinstance(value)
 
 
 class Union(DepType):
@@ -272,9 +272,9 @@ class Union(DepType):
             using.update(t.using)
         self.using = using
 
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         for t in self.dtype:
-            if t.isinstance(value):
+            if t._isinstance(value):
                 return True
         return False
 
@@ -291,7 +291,7 @@ class List(DepType):
         using.update(_get_using(len))
         self.using = using
 
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, list):
             return False
         if isinstance(self.len, SizeExpr):
@@ -299,7 +299,7 @@ class List(DepType):
         if len(value) != self.len:
             return False
         for v in value:
-            if not self.dtype.isinstance(v):
+            if not self.dtype._isinstance(v):
                 return False
         return True
 
@@ -314,13 +314,13 @@ class Tuple(DepType):
             using.update(t.using)
         self.using = using
 
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, tuple):
             return False
         if len(value) != len(self.dtype):
             return False
         for v, t in zip(value, self.dtype):
-            if not t.isinstance(v):
+            if not t._isinstance(v):
                 return False
         return True
 
@@ -335,13 +335,13 @@ class Dict(DepType):
             using.update(t.using)
         self.using = using
 
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, dict):
             return False
         if value.keys() != self.dtype.keys():
             return False
         for k in self.dtype.keys():
-            if not self.dtype[k].isinstance(value[k]):
+            if not self.dtype[k]._isinstance(value[k]):
                 return False
         return True
 
@@ -353,21 +353,21 @@ class Class(DepType):
         self.dtype = dtype
         self.using = {}
 
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         return isinstance(value, self.dtype)
 
 
 class Int(DepType):
     using: _Dict[int, SizeVar] = {}
 
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         return isinstance(value, int)
 
 
 class Float(DepType):
     using: _Dict[int, SizeVar] = {}
 
-    def isinstance(self, value: _Any) -> bool:
+    def _isinstance(self, value: _Any) -> bool:
         return isinstance(value, float)
 
 
@@ -395,9 +395,9 @@ def _dyn_check_unsafe(
         def wrapper(*args: _Any) -> return_t:
             assert len(args) == len(input)
             for arg, t in zip(args, input):
-                assert t.isinstance(arg)
+                assert t._isinstance(arg)
             value = f(*args)
-            assert output.isinstance(value)
+            assert output._isinstance(value)
             for s in using.values():
                 s.value = None
             return value
@@ -512,11 +512,11 @@ if __name__ == '__main__':
     B, typeB = _numpy.zeros((10, 5)), NDArray(_numpy.float64, (M, K))
     C, typeC = _numpy.zeros((5, 7)), NDArray(_numpy.float64, (K, N))
     CC = _numpy.zeros((6, 7))
-    assert typeB.isinstance(B)
-    assert typeC.isinstance(C)
-    assert not typeC.isinstance(CC)
+    assert typeB._isinstance(B)
+    assert typeC._isinstance(C)
+    assert not typeC._isinstance(CC)
     print(K.value)
-    assert NDArray(_numpy.float64, (K + 1, N)).isinstance(CC)
+    assert NDArray(_numpy.float64, (K + 1, N))._isinstance(CC)
     print('using' in typeB.__dict__, 'dtype' in typeB.__dict__)
     print(Int())
     M = SizeVar()
