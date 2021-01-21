@@ -31,7 +31,7 @@ def _make_using(
     return using
 
 
-class DepSize(metaclass=_abc.ABCMeta):
+class _DepSize(metaclass=_abc.ABCMeta):
     def __eq__(self, value: object) -> bool:
         assert isinstance(value, int)
         return self._eq_(value)
@@ -48,122 +48,96 @@ class DepSize(metaclass=_abc.ABCMeta):
     def get_value(self) -> Union[int, float]:
         pass
 
+
+class DepSize(_DepSize, metaclass=_abc.ABCMeta):  # 算术运算支持
     def __neg__(self) -> SizeExpr:
         def neg() -> Union[int, float]:
             return -self.get_value()
 
         return SizeExpr(_make_using(self, None), neg)
 
-    def __add__(self, _value: object) -> SizeExpr:
+    def __add__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def add() -> Union[int, float]:
             return self.get_value() + _get_value(value)
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), add)
 
-    def __sub__(self, _value: object) -> SizeExpr:
+    def __sub__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def sub() -> Union[int, float]:
             return self.get_value() - _get_value(value)
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), sub)
 
-    def __mul__(self, _value: object) -> SizeExpr:
+    def __mul__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def mul() -> Union[int, float]:
             return self.get_value() * _get_value(value)
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), mul)
 
-    def __floordiv__(self, _value: object) -> SizeExpr:
+    def __floordiv__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def floordiv() -> Union[int, float]:
             return self.get_value() // _get_value(value)
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), floordiv)
 
-    def __truediv__(self, _value: object) -> SizeExpr:
+    def __truediv__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def truediv() -> Union[int, float]:
             return self.get_value() / _get_value(value)
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), truediv)
 
-    def __mod__(self, _value: object) -> SizeExpr:
+    def __mod__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def mod() -> Union[int, float]:
             return self.get_value() % _get_value(value)
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), mod)
 
-    def __pow__(self, _value: object) -> SizeExpr:
+    def __pow__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def pow() -> Union[int, float]:
             return self.get_value()**_get_value(value)
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), pow)
 
-    def __radd__(self, _value: object) -> SizeExpr:
+    def __radd__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def radd() -> Union[int, float]:
             return _get_value(value) + self.get_value()
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), radd)
 
-    def __rsub__(self, _value: object) -> SizeExpr:
+    def __rsub__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def rsub() -> Union[int, float]:
             return _get_value(value) - self.get_value()
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), rsub)
 
-    def __rmul__(self, _value: object) -> SizeExpr:
+    def __rmul__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def rmul() -> Union[int, float]:
             return _get_value(value) * self.get_value()
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), rmul)
 
-    def __rfloordiv__(self, _value: object) -> SizeExpr:
+    def __rfloordiv__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def rfloordiv() -> Union[int, float]:
             return _get_value(value) // self.get_value()
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), rfloordiv)
 
-    def __rtruediv__(self, _value: object) -> SizeExpr:
+    def __rtruediv__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def rtruediv() -> Union[int, float]:
             return _get_value(value) / self.get_value()
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), rtruediv)
 
-    def __rmod__(self, _value: object) -> SizeExpr:
+    def __rmod__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def rmod() -> Union[int, float]:
             return _get_value(value) % self.get_value()
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), rmod)
 
-    def __rpow__(self, _value: object) -> SizeExpr:
+    def __rpow__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def rpow() -> Union[int, float]:
             return _get_value(value)**self.get_value()
 
-        assert isinstance(_value, (int, float, DepSize))
-        value = _value
         return SizeExpr(_make_using(self, value), rpow)
 
 
