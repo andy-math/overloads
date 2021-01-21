@@ -519,3 +519,19 @@ if __name__ == '__main__':
     assert NDArray(_numpy.float64, (K + 1, N)).isinstance(CC)
     print('using' in typeB.__dict__, 'dtype' in typeB.__dict__)
     print(Int())
+    M = SizeVar()
+    N = SizeVar()
+    K = SizeVar()
+
+    @dyn_check_2(  #
+        input=(NDArray(_numpy.float64, (M, K)), NDArray(_numpy.float64, (K, N))),  #
+        output=NDArray(_numpy.float64, (M, N)))
+    def matmul(A: _Any, B: _Any) -> _Any:
+        return A @ B
+
+    matmul(_numpy.zeros((10, 3)), _numpy.zeros((3, 5)))
+    matmul(_numpy.zeros((2, 5)), _numpy.zeros((5, 9)))
+    try:
+        matmul(_numpy.zeros((2, 5)), _numpy.zeros((6, 9)))
+    except AssertionError as e:
+        print(type(e))
