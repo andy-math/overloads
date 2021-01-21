@@ -208,17 +208,26 @@ def _get_using(value: DepSize) -> _Dict[int, SizeVar]:
 
 
 class DepType(metaclass=_abc.ABCMeta):
-    using: _Dict[int, SizeVar]
+    @_abc.abstractproperty
+    def using(self) -> _Dict[int, SizeVar]:
+        pass
 
     @_abc.abstractmethod
     def _isinstance(self, value: _Any) -> bool:
         pass
+
+    def isinstance(self, value: _Any) -> bool:
+        result = self._isinstance(value)
+        for s in self.using.values():
+            s.value = None
+        return result
 
 
 class NDArray(DepType):
     dtype: _Type[_Any]
     shape: _Tuple[DepSize, ...]
     isfortran: bool
+    using: _Dict[int, SizeVar] = {}
 
     def __init__(self,
                  dtype: _Type[_Any],
@@ -227,10 +236,8 @@ class NDArray(DepType):
         self.dtype = dtype
         self.shape = shape
         self.isfortran = isfortran
-        using: _Dict[int, SizeVar] = {}
         for s in shape:
-            using.update(_get_using(s))
-        self.using = using
+            self.using.update(_get_using(s))
 
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, _numpy.ndarray):
@@ -251,10 +258,11 @@ class NDArray(DepType):
 
 class Optional(DepType):
     dtype: DepType
+    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: DepType) -> None:
         self.dtype = dtype
-        self.using = dtype.using
+        self.using.update(dtype.using)
 
     def _isinstance(self, value: _Any) -> bool:
         if value is None:
@@ -264,13 +272,12 @@ class Optional(DepType):
 
 class Union(DepType):
     dtype: _Tuple[DepType, ...]
+    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, *dtype: DepType) -> None:
         self.dtype = dtype
-        using: _Dict[int, SizeVar] = {}
         for t in dtype:
-            using.update(t.using)
-        self.using = using
+            self.using.update(t.using)
 
     def _isinstance(self, value: _Any) -> bool:
         for t in self.dtype:
@@ -282,14 +289,13 @@ class Union(DepType):
 class List(DepType):
     dtype: DepType
     len: DepSize
+    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: DepType, len: DepSize) -> None:
         self.dtype = dtype
         self.len = len
-        using: _Dict[int, SizeVar] = {}
-        using.update(dtype.using)
-        using.update(_get_using(len))
-        self.using = using
+        self.using.update(dtype.using)
+        self.using.update(_get_using(len))
 
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, list):
@@ -306,13 +312,12 @@ class List(DepType):
 
 class Tuple(DepType):
     dtype: _Tuple[DepType, ...]
+    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: _Tuple[DepType, ...], len: DepSize) -> None:
         self.dtype = dtype
-        using: _Dict[int, SizeVar] = {}
         for t in dtype:
-            using.update(t.using)
-        self.using = using
+            self.using.update(t.using)
 
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, tuple):
@@ -327,13 +332,12 @@ class Tuple(DepType):
 
 class Dict(DepType):
     dtype: _Dict[_Any, DepType]
+    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: _Dict[_Any, DepType]) -> None:
         self.dtype = dtype
-        using: _Dict[int, SizeVar] = {}
         for t in dtype.values():
-            using.update(t.using)
-        self.using = using
+            self.using.update(t.using)
 
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, dict):
@@ -348,10 +352,10 @@ class Dict(DepType):
 
 class Class(DepType):
     dtype: _Type[_Any]
+    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: _Type[_Any]) -> None:
         self.dtype = dtype
-        self.using = {}
 
     def _isinstance(self, value: _Any) -> bool:
         return isinstance(value, self.dtype)
@@ -386,9 +390,10 @@ return_t = _TypeVar('return_t')
 def _dyn_check_unsafe(
         *, input: _Tuple[DepType, ...],
         output: DepType) -> _Callable[[_Callable[..., return_t]], _Callable[..., return_t]]:
-    using: _Dict[int, SizeVar] = output.using
+    using: _Dict[int, SizeVar] = {}
     for t in input:
         using.update(t.using)
+    using.update(output.using)
 
     def decorator(f: _Callable[..., return_t]) -> _Callable[..., return_t]:
         @_wraps(f)
