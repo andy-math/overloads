@@ -365,25 +365,17 @@ class Class(DepType):
 
 
 class Int(DepType):
-    dtype: _Type[_Any]
-
-    def __init__(self) -> None:
-        self.dtype = int
-        self.using = {}
+    using: _Dict[int, SizeVar] = {}
 
     def isinstance(self, value: _Any) -> bool:
-        return isinstance(value, self.dtype)
+        return isinstance(value, int)
 
 
 class Float(DepType):
-    dtype: _Type[_Any]
-
-    def __init__(self) -> None:
-        self.dtype = float
-        self.using = {}
+    using: _Dict[int, SizeVar] = {}
 
     def isinstance(self, value: _Any) -> bool:
-        return isinstance(value, self.dtype)
+        return isinstance(value, float)
 
 
 _T1 = _TypeVar('_T1')
@@ -533,3 +525,4 @@ if __name__ == '__main__':
     print(K.value)
     assert NDArray(_numpy.float64, (K + 1, N)).isinstance(CC)
     print('using' in typeB.__dict__, 'dtype' in typeB.__dict__)
+    print(Int())
