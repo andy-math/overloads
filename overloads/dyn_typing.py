@@ -47,10 +47,6 @@ class _DepSize(metaclass=_abc.ABCMeta):
         pass
 
     @_abc.abstractmethod
-    def check_using(self) -> None:
-        pass
-
-    @_abc.abstractmethod
     def get_value(self) -> _Union[int, float]:
         pass
 
@@ -195,9 +191,6 @@ class SizeConst(DepSize):
 
     def _eq_(self, value: int) -> bool:
         return self.value == value
-
-    def check_using(self) -> None:
-        pass  # using nothing
 
     def get_value(self) -> int:
         return self.value
