@@ -39,11 +39,3 @@ def assertNoInfNaN(x: numpy.ndarray[numpy.float64]) -> None:
     idx = numpy.where(numpy.logical_not(numpy.isfinite(xx)))  # type: ignore
     count = idx[0].shape[0]
     assert count == 0, ('出现了Inf或NaN', xx[idx], idx)
-
-
-if __name__ == '__main__':
-    isfinite = numpy.isfinite  # type: ignore
-    assert not bool(isfinite(numpy.array([numpy.inf])))
-    assert not bool(isfinite(numpy.array([numpy.nan])))
-    assert not bool(isfinite(numpy.array([-numpy.inf])))
-    assert numpy.isnan(numpy.sqrt(numpy.array([-1])))
