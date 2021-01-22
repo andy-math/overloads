@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime
+import os
 import pickle
 from typing import Any, Optional, Tuple
 
@@ -9,6 +10,9 @@ import numpy
 
 
 def save(filename: str, object: Any) -> None:
+    path, basename = os.path.split(filename)
+    if path != '':
+        os.makedirs(path, exist_ok=True)
     with open(filename, 'wb') as f:
         pickle.dump(object, f)
 
