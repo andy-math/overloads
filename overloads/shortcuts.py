@@ -19,7 +19,8 @@ def save(filename: str, object: Any) -> None:
 
 def load(filename: str) -> Any:
     with open(filename, 'rb') as f:
-        pickle.load(f)
+        return pickle.load(f)
+    assert False
 
 
 def timestamp(*,
