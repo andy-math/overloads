@@ -1,4 +1,6 @@
-from overloads import shortcuts
+import overloads
+
+shortcuts = overloads.shortcuts
 
 
 # save_load 支持树状路径
