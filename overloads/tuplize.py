@@ -75,17 +75,3 @@ def tuplize_9(
     f: _Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9], _return_t]
 ) -> _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9]], _return_t]:
     return _tuplize_unsafe(f)
-
-
-if __name__ == '__main__':
-
-    @tuplize_0
-    def coeff0() -> int:
-        return 1
-
-    @tuplize_3
-    def coeff3(a: int, b: float, c: _Tuple[()]) -> _Tuple[int, float, _Tuple[()]]:
-        return a, b, c
-
-    coeff0(())
-    coeff3((1, 1, ()))

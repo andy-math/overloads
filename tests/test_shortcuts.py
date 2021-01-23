@@ -1,3 +1,7 @@
+import math
+from typing import Any
+
+import numpy
 from overloads import shortcuts
 
 
@@ -43,4 +47,33 @@ class Test_时间戳检查():
         assert shortcuts.timestamp(time=datetime.datetime.strptime(ss, fmt), format=fmt) == ss
 
 
+def cap_except(f: Any) -> AssertionError:
+    try:
+        f()
+        assert False
+    except AssertionError as e:
+        return e
+
+
 # assertInfNaN
+class Test_assertInfNaN():
+    def test_输入正无穷(self) -> None:
+        ss = '出现了Inf或NaN'
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN(numpy.array([numpy.inf]))).args[0][0] == ss
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN(numpy.array([math.inf]))).args[0][0] == ss
+
+    def test_输入负无穷(self) -> None:
+        ss = '出现了Inf或NaN'
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN(numpy.array([-numpy.inf]))).args[0][0] == ss
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN(numpy.array([-math.inf]))).args[0][0] == ss
+
+    def test_输入NaN(self) -> None:
+        ss = '出现了Inf或NaN'
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN(numpy.array([numpy.nan]))).args[0][0] == ss
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN(numpy.array([math.nan]))).args[0][0] == ss
