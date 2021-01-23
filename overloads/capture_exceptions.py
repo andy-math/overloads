@@ -4,8 +4,6 @@ import copy
 from typing import (Any, Callable, Dict, Generic, List, Optional, Sequence, Tuple, Type, TypeVar,
                     Union)
 
-import tuplize
-
 param_t = TypeVar('param_t')
 return_t = TypeVar('return_t')
 
@@ -73,15 +71,3 @@ def map(
             print("[{}]: {}".format(idx, result))
         result_list.append(result)
     return result_list
-
-
-if __name__ == '__main__':
-
-    Numeric = Union[int, float]
-
-    @tuplize.tuplize_1
-    def square(x: Numeric) -> Numeric:
-        return x * x
-
-    e = map(square, [(1, ), (0, ), (2, ), (1.0, ), (2.0, )], catch=Exception)
-    print(e)
