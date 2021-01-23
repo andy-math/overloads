@@ -208,26 +208,3 @@ def make_checker_9(
                _checker_input_t]
 ], None]:
     return _make_checker_unsafe(f)
-
-
-if __name__ == '__main__':
-    from typing import TYPE_CHECKING
-
-    import numpy
-
-    from shortcuts import assertNoInfNaN
-    if TYPE_CHECKING:
-        ndarray = numpy.ndarray[numpy.float64]
-    else:
-        ndarray = numpy.ndarray
-
-    @bind_checker_3(input=make_checker_3(assertNoInfNaN), output=make_checker_2(assertNoInfNaN))
-    def f(a: ndarray, b: ndarray, c: ndarray) -> _Tuple[ndarray, ndarray]:
-        return a, b
-
-    f(numpy.array([1]), numpy.array([1.0]), numpy.array([2]))
-
-    try:
-        f(numpy.array([numpy.nan]), numpy.array([1.0]), numpy.array([2]))
-    except BaseException as e:
-        print(e)
