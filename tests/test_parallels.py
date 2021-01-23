@@ -38,7 +38,8 @@ def callback(
                   Captured_Exception[Tuple[int, Optional[int]]]]
 ) -> None:
     assert not isinstance(result, Captured_Exception)
-    _, ident = result
+    a, ident = result
+    assert 0 <= a and a < 10
     assert ident is not None
     ident_set.add(ident)
     assert ident != multiprocessing.current_process().ident
@@ -54,11 +55,21 @@ class TestCase():
             assert a == i
         assert len(ident_set) > 1
 
-    def test_parprint(self) -> None:
-        parallels.parprint('aaabbb能用就行', sep='sep', end='end')
-
     def test_异常(self) -> None:
         ce = parallels.parfor(g, [1])[0]
         assert isinstance(ce, Captured_Exception)
         assert isinstance(ce.exception, E)
         assert ce.exception.args[0] == 'aaa'
+
+    def test_helper(self) -> None:
+        def f(a: int) -> int:
+            parallels.parprint('aaabbb能用就行', '', '', sep='sep', end='end')
+            return a * a
+
+        idx = 0
+        arg = 2
+        info_tuple = (idx, f, arg)
+        iidx, res, out = parallels.helper(info_tuple)
+        assert out == 'aaabbb能用就行sepsepend'
+        assert iidx == idx
+        assert res == 4
