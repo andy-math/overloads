@@ -7,6 +7,7 @@ from typing import Any as _Any
 from typing import Callable as _Callable
 from typing import Dict as _Dict
 from typing import Optional as _Optional
+from typing import Set as _Set
 from typing import Tuple as _Tuple
 from typing import Type as _Type
 from typing import TypeVar as _TypeVar
@@ -29,18 +30,13 @@ def _get_value(value: _Union[int, float, DepSize]) -> _Union[int, float]:
         return value.expr()
 
 
-def _make_using(
-        self: DepSize,  # force line wrap
-        value: _Optional[_Union[int, float, DepSize]]) -> _Dict[int, SizeVar]:
-    using: _Dict[int, SizeVar] = {}
-    if isinstance(self, SizeExpr):
-        using.update(self.using)
-    elif isinstance(self, SizeVar):
-        using[id(self)] = self
-    if isinstance(value, SizeExpr):
-        using.update(value.using)
-    elif isinstance(value, SizeVar):
-        using[id(self)] = value
+def _make_using(*values: _Union[int, float, DepSize, DepType]) -> _Set[SizeVar]:
+    using: _Set[SizeVar] = set()
+    for value in values:
+        if isinstance(value, SizeVar):
+            using.add(value)
+        elif isinstance(value, (SizeExpr, DepType)):
+            using.update(value.using)
     return using
 
 
@@ -55,7 +51,7 @@ class DepSize(_DepSize, metaclass=_abc.ABCMeta):  # 算术运算支持
         def neg() -> _Union[int, float]:
             return -_get_value(self)
 
-        return SizeExpr(_make_using(self, None), neg)
+        return SizeExpr(_make_using(self), neg)
 
     def __add__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
         def add() -> _Union[int, float]:
@@ -143,12 +139,12 @@ class DepSize(_DepSize, metaclass=_abc.ABCMeta):  # 算术运算支持
 
 
 class SizeExpr(DepSize):
-    using: _Dict[int, SizeVar]
+    using: _Set[SizeVar]
     expr: _Optional[_Callable[[], _Union[int, float]]]
 
     def __init__(
             self,
-            using: _Dict[int, SizeVar],  # force line wrap
+            using: _Set[SizeVar],  # force line wrap
             expr: _Callable[[], _Union[int, float]]) -> None:
         self.using = using
         self.expr = expr
@@ -158,8 +154,8 @@ class SizeExpr(DepSize):
         return self.expr() == value
 
     def check_using(self) -> None:
-        for s in self.using.values():
-            s.check_using()
+        for s in self.using:
+            assert s.value is not None
 
 
 class SizeVar(DepSize):
@@ -169,9 +165,6 @@ class SizeVar(DepSize):
         if self.value is None:
             self.value = value
         return self.value == value
-
-    def check_using(self) -> None:
-        assert self.value is not None
 
 
 class SizeConst(DepSize):
@@ -184,21 +177,8 @@ class SizeConst(DepSize):
         return self.value == value
 
 
-def _get_using(value: DepSize) -> _Dict[int, SizeVar]:
-    using: _Dict[int, SizeVar]
-    if isinstance(value, SizeVar):
-        using = {id(value): value}
-    elif isinstance(value, SizeExpr):
-        using = value.using
-    else:
-        using = {}
-    return using
-
-
 class DepType(metaclass=_abc.ABCMeta):
-    @_abc.abstractproperty
-    def using(self) -> _Dict[int, SizeVar]:
-        pass
+    using: _Set[SizeVar]
 
     @_abc.abstractmethod
     def _isinstance(self, value: _Any) -> bool:
@@ -206,7 +186,7 @@ class DepType(metaclass=_abc.ABCMeta):
 
     def isinstance(self, value: _Any) -> bool:
         result = self._isinstance(value)
-        for s in self.using.values():
+        for s in self.using:
             s.value = None
         return result
 
@@ -215,17 +195,15 @@ class NDArray(DepType):
     dtype: _Type[_Any]
     shape: _Tuple[DepSize, ...]
     isfortran: bool
-    using: _Dict[int, SizeVar] = {}
 
     def __init__(self,
                  dtype: _Type[_Any],
                  shape: _Tuple[DepSize, ...],
                  isfortran: bool = False) -> None:
+        self.using = _make_using(*shape)
         self.dtype = dtype
         self.shape = shape
         self.isfortran = isfortran
-        for s in shape:
-            self.using.update(_get_using(s))
 
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, _numpy.ndarray):
@@ -246,11 +224,10 @@ class NDArray(DepType):
 
 class Optional(DepType):
     dtype: DepType
-    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: DepType) -> None:
+        self.using = _make_using(dtype)
         self.dtype = dtype
-        self.using.update(dtype.using)
 
     def _isinstance(self, value: _Any) -> bool:
         if value is None:
@@ -260,12 +237,10 @@ class Optional(DepType):
 
 class Union(DepType):
     dtype: _Tuple[DepType, ...]
-    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, *dtype: DepType) -> None:
+        self.using = _make_using(*dtype)
         self.dtype = dtype
-        for t in dtype:
-            self.using.update(t.using)
 
     def _isinstance(self, value: _Any) -> bool:
         for t in self.dtype:
@@ -277,13 +252,11 @@ class Union(DepType):
 class List(DepType):
     dtype: DepType
     len: DepSize
-    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: DepType, len: DepSize) -> None:
+        self.using = _make_using(dtype, len)
         self.dtype = dtype
         self.len = len
-        self.using.update(dtype.using)
-        self.using.update(_get_using(len))
 
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, list):
@@ -300,12 +273,10 @@ class List(DepType):
 
 class Tuple(DepType):
     dtype: _Tuple[DepType, ...]
-    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: _Tuple[DepType, ...]) -> None:
+        self.using = _make_using(*dtype)
         self.dtype = dtype
-        for t in dtype:
-            self.using.update(t.using)
 
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, tuple):
@@ -320,12 +291,10 @@ class Tuple(DepType):
 
 class Dict(DepType):
     dtype: _Dict[_Any, DepType]
-    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: _Dict[_Any, DepType]) -> None:
+        self.using = _make_using(*dtype.values())
         self.dtype = dtype
-        for t in dtype.values():
-            self.using.update(t.using)
 
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, dict):
@@ -340,9 +309,9 @@ class Dict(DepType):
 
 class Class(DepType):
     dtype: _Type[_Any]
-    using: _Dict[int, SizeVar] = {}
 
     def __init__(self, dtype: _Type[_Any]) -> None:
+        self.using = set()
         self.dtype = dtype
 
     def _isinstance(self, value: _Any) -> bool:
@@ -350,14 +319,16 @@ class Class(DepType):
 
 
 class Int(DepType):
-    using: _Dict[int, SizeVar] = {}
+    def __init__(self) -> None:
+        self.using = set()
 
     def _isinstance(self, value: _Any) -> bool:
         return isinstance(value, int)
 
 
 class Float(DepType):
-    using: _Dict[int, SizeVar] = {}
+    def __init__(self) -> None:
+        self.using = set()
 
     def _isinstance(self, value: _Any) -> bool:
         return isinstance(value, float)
@@ -378,10 +349,7 @@ return_t = _TypeVar('return_t')
 def _dyn_check_unsafe(
         *, input: _Tuple[DepType, ...],
         output: DepType) -> _Callable[[_Callable[..., return_t]], _Callable[..., return_t]]:
-    using: _Dict[int, SizeVar] = {}
-    for t in input:
-        using.update(t.using)
-    using.update(output.using)
+    using = _make_using(*input, output)
 
     def decorator(f: _Callable[..., return_t]) -> _Callable[..., return_t]:
         @_wraps(f)
@@ -391,7 +359,7 @@ def _dyn_check_unsafe(
                 assert t._isinstance(arg)
             value = f(*args)
             assert output._isinstance(value)
-            for s in using.values():
+            for s in using:
                 s.value = None
             return value
 

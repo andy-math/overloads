@@ -58,9 +58,9 @@ class Test():
         a = SizeVar()
         aExpr = a * 2
         T = dyn_typing.List(Int, aExpr)
-        assert a == 1
+        assert a.eqn(1)
         assert T.isinstance([1, 1])
-        assert a == 1
+        assert a.eqn(1)
         assert not T.isinstance([1, 1, 1])
 
     def test_Tuple(self) -> None:
@@ -81,22 +81,22 @@ class Test():
 
     def test_Expr(self) -> None:
         a = SizeConst(4)
-        assert -a == -4
-        assert a + 3 == 4 + 3
-        assert a - 3 == 4 - 3
-        assert a * 3 == 4 * 3
-        assert a / 2 == int(4 / 2)
-        assert a // 3 == 4 // 3
-        assert a % 3 == 4 % 3
-        assert a**3 == int(4**3)
-        assert 3 + a == 3 + 4
-        assert 3 - a == 3 - 4
-        assert 3 * a == 3 * 4
-        assert 8 / a == int(8 / 4)
-        assert 3 // a == 3 // 4
-        assert 3 % a == 3 % 4
-        assert 3**a == int(3**4)
-        assert a + a + a == 4 + 4 + 4
+        assert (-a).eqn(-4)
+        assert (a + 3).eqn(4 + 3)
+        assert (a - 3).eqn(4 - 3)
+        assert (a * 3).eqn(4 * 3)
+        assert (a / 2).eqn(int(4 / 2))
+        assert (a // 3).eqn(4 // 3)
+        assert (a % 3).eqn(4 % 3)
+        assert (a**3).eqn(int(4**3))
+        assert (3 + a).eqn(3 + 4)
+        assert (3 - a).eqn(3 - 4)
+        assert (3 * a).eqn(3 * 4)
+        assert (8 / a).eqn(int(8 / 4))
+        assert (3 // a).eqn(3 // 4)
+        assert (3 % a).eqn(3 % 4)
+        assert (3**a).eqn(int(3**4))
+        assert (a + a + a).eqn(4 + 4 + 4)
 
 
 dynInt = dyn_typing.Int()
