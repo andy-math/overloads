@@ -314,7 +314,7 @@ class Tuple(DepType):
     dtype: _Tuple[DepType, ...]
     using: _Dict[int, SizeVar] = {}
 
-    def __init__(self, dtype: _Tuple[DepType, ...], len: DepSize) -> None:
+    def __init__(self, dtype: _Tuple[DepType, ...]) -> None:
         self.dtype = dtype
         for t in dtype:
             self.using.update(t.using)
