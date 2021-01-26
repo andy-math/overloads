@@ -44,11 +44,11 @@ class _DepSize(metaclass=_abc.ABCMeta):
 
     @_abc.abstractmethod
     def _eq_(self, value: int) -> bool:
-        pass
+        pass  # pragma: no cover
 
     @_abc.abstractmethod
     def get_value(self) -> _Union[int, float]:
-        pass
+        pass  # pragma: no cover
 
 
 class DepSize(_DepSize, metaclass=_abc.ABCMeta):  # 算术运算支持
@@ -214,7 +214,7 @@ class DepType(metaclass=_abc.ABCMeta):
 
     @_abc.abstractmethod
     def _isinstance(self, value: _Any) -> bool:
-        pass
+        pass  # pragma: no cover
 
     def isinstance(self, value: _Any) -> bool:
         result = self._isinstance(value)
