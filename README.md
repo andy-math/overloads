@@ -12,7 +12,7 @@
     import bind_checker as bd_chk
     from shortcuts import assertNoInfNaN
 
-    # `_2`表示输入参数为两个，映射到`Tuple[T1, T2]`
+    # `_2`表示输入参数为两个，映射到`input[T1, T2]`
     # varadic (like C++) 受PEP484限制无法实现
     checkInfNaN_2 = bd_chk.make_checker_2(assertNoInfNaN)
 
@@ -28,7 +28,7 @@
     def f(a: np.ndarray, b: np.ndarray) -> None:
         pass
 
-    
+
     f(np.array(1), np.array(2))  # OK
     f(np.array(np.nan), np.array(2))  # AssertionError
     f(np.array(1), np.array(np.nan))  # AssertionError
@@ -85,7 +85,7 @@
     K = dynT.SizeVar()
 
 
-    @dynT.dyn_check_2(  # `_2`表示输入参数为两个，映射到`Tuple[T1, T2]`, varadic (like C++) 受PEP484限制无法实现
+    @dynT.dyn_check_2(  # `_2`表示输入参数为两个，映射到`input[T1, T2]`, varadic (like C++) 受PEP484限制无法实现
         input=(dynT.NDArray(np.float64, (M, K)), dynT.NDArray(np.float64, (K, N))),
         output=dynT.NDArray(np.float64, (M, N))
     )
@@ -140,7 +140,7 @@
 * ### tuplize
     #### 多元函数转化为一元`tuple`函数
     ```python
-    # `_2`表示输入参数为两个，映射到`Tuple[T1, T2]`
+    # `_2`表示输入参数为两个，映射到`input[T1, T2]`
     # varadic (like C++) 受PEP484限制无法实现
     @tuplize.tuplize_2
     def f(a: int, b: int) -> int:
