@@ -20,12 +20,15 @@
     def checkNone(_: None) -> None:
         pass
 
+
     @bd_chk.bind_checker_2(  # `_2`, PEP484
         input=checkInfNaN_2,  # `_2`, PEP484
         output=checkNone
     )
     def f(a: np.ndarray, b: np.ndarray) -> None:
         pass
+
+    
     f(np.array(1), np.array(2))  # OK
     f(np.array(np.nan), np.array(2))  # AssertionError
     f(np.array(1), np.array(np.nan))  # AssertionError
