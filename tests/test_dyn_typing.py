@@ -171,8 +171,41 @@ def f9(a: Any, b: Any, c: Any, d: Any, e: Any, f: Any, g: Any, h: Any, ii: Any) 
 
 fff = (f0, f1, f2, f3, f4, f5, f6, f7, f8, f9)
 
+MM = SizeVar()
+NN = SizeVar()
+KK = SizeVar()
+
+
+@tuplize.tuplize_2
+@dyn_typing.dyn_check_2(input=(dyn_typing.NDArray(numpy.float64, (MM, KK)),
+                               dyn_typing.NDArray(numpy.float64, (KK, NN))),
+                        output=dyn_typing.NDArray(numpy.float64, (MM, NN)))
+def matmul(a: Any, b: Any) -> Any:
+    return a @ b
+
+
+@tuplize.tuplize_2
+@dyn_typing.dyn_check_2(input=(dyn_typing.NDArray(numpy.float64, (MM, KK)),
+                               dyn_typing.NDArray(numpy.float64, (KK, NN))),
+                        output=dyn_typing.NDArray(numpy.float64, (MM, NN)))
+def matmulERR(a: Any, b: Any) -> Any:
+    return numpy.zeros((1, 1))
+
 
 class TestDynChk():
+    def test_matmul(self) -> None:
+        assert matmul((numpy.zeros((2, 3)), numpy.zeros((3, 4)))).shape == (2, 4)
+        assert matmul((numpy.zeros((7, 6)), numpy.zeros((6, 5)))).shape == (7, 5)
+        ce = capture_exceptions(matmul, (numpy.zeros((7, 6)), numpy.zeros((3, 4))))
+        assert isinstance(ce, Captured_Exception)
+        assert isinstance(ce.exception, AssertionError)
+
+    def test_matmul_ERRimpl(self) -> None:
+        assert matmulERR((numpy.zeros((1, 6)), numpy.zeros((6, 1)))).shape == (1, 1)
+        ce = capture_exceptions(matmulERR, (numpy.zeros((7, 6)), numpy.zeros((6, 4))))
+        assert isinstance(ce, Captured_Exception)
+        assert isinstance(ce.exception, AssertionError)
+
     def test_1(self) -> None:
         dataOK = 1
         dataERR = None

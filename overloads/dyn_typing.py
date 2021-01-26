@@ -354,14 +354,16 @@ def _dyn_check_unsafe(
     def decorator(f: _Callable[..., return_t]) -> _Callable[..., return_t]:
         @_wraps(f)
         def wrapper(*args: _Any) -> return_t:
-            assert len(args) == len(input)
-            for arg, t in zip(args, input):
-                assert t._isinstance(arg)
-            value = f(*args)
-            assert output._isinstance(value)
-            for s in using:
-                s.value = None
-            return value
+            try:
+                assert len(args) == len(input)
+                for arg, t in zip(args, input):
+                    assert t._isinstance(arg)
+                value = f(*args)
+                assert output._isinstance(value)
+                return value
+            finally:
+                for s in using:
+                    s.value = None
 
         return wrapper
 
