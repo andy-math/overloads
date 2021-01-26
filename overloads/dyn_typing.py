@@ -45,12 +45,8 @@ def _make_using(
 
 
 class _DepSize(metaclass=_abc.ABCMeta):
-    def __eq__(self, value: object) -> bool:
-        assert isinstance(value, int)
-        return self._eq_(value)
-
     @_abc.abstractmethod
-    def _eq_(self, value: int) -> bool:
+    def eqn(self, value: int) -> bool:
         pass  # pragma: no cover
 
 
@@ -157,7 +153,7 @@ class SizeExpr(DepSize):
         self.using = using
         self.expr = expr
 
-    def _eq_(self, value: int) -> bool:
+    def eqn(self, value: int) -> bool:
         assert self.expr is not None
         return self.expr() == value
 
@@ -169,7 +165,7 @@ class SizeExpr(DepSize):
 class SizeVar(DepSize):
     value: _Optional[int] = None
 
-    def _eq_(self, value: int) -> bool:
+    def eqn(self, value: int) -> bool:
         if self.value is None:
             self.value = value
         return self.value == value
@@ -184,7 +180,7 @@ class SizeConst(DepSize):
     def __init__(self, value: int) -> None:
         self.value = value
 
-    def _eq_(self, value: int) -> bool:
+    def eqn(self, value: int) -> bool:
         return self.value == value
 
 
@@ -243,7 +239,7 @@ class NDArray(DepType):
         for a, b in zip(value.shape, self.shape):
             if isinstance(b, SizeExpr):
                 b.check_using()
-            if a != b:
+            if not b.eqn(a):
                 return False
         return True
 
@@ -294,7 +290,7 @@ class List(DepType):
             return False
         if isinstance(self.len, SizeExpr):
             self.len.check_using()
-        if len(value) != self.len:
+        if not self.len.eqn(len(value)):
             return False
         for v in value:
             if not self.dtype._isinstance(v):
