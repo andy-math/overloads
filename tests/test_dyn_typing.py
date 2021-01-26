@@ -51,11 +51,44 @@ class Test():
         assert not T.isinstance([1, 1, 1])
         assert not T.isinstance([1, 1.0])
         assert T.isinstance([1, 1])
+        assert not T.isinstance(None)
+        a = SizeVar()
+        aExpr = a * 2
+        T = dyn_typing.List(Int, aExpr)
+        assert a == 1
+        assert T.isinstance([1, 1])
+        assert a == 1
+        assert not T.isinstance([1, 1, 1])
 
     def test_Tuple(self) -> None:
         Int = dyn_typing.Int()
         Float = dyn_typing.Float()
         T = dyn_typing.Tuple((Int, Float))
-        assert not T.isinstance([1, 1, 1])
+        assert not T.isinstance((1, 1, 1))
+        assert T.isinstance((1, 1.0))
+        assert not T.isinstance((1, 1))
         assert not T.isinstance([1, 1.0])
-        assert T.isinstance([1, 1])
+
+    def test_Dict(self) -> None:
+        T = dyn_typing.Dict({'a': dyn_typing.Int(), 'b': dyn_typing.Float()})
+        assert T.isinstance({'b': 1.0, 'a': 1})
+        assert not T.isinstance({'a': 1, 'b': 1})
+        assert not T.isinstance({'a': 1, 'c': 1.0})
+        assert not T.isinstance([])
+
+    def test_Expr(self) -> None:
+        a = SizeConst(4)
+        assert a + 3 == 4 + 3
+        assert a - 3 == 4 - 3
+        assert a * 3 == 4 * 3
+        assert a / 2 == int(4 / 2)
+        assert a // 3 == 4 // 3
+        assert a % 3 == 4 % 3
+        assert a**3 == int(4**3)
+        assert 3 + a == 3 + 4
+        assert 3 - a == 3 - 4
+        assert 3 * a == 3 * 4
+        assert 8 / a == int(8 / 4)
+        assert 3 // a == 3 // 4
+        assert 3 % a == 3 % 4
+        assert 3**a == int(3**4)
