@@ -77,3 +77,27 @@ class Test_assertInfNaN():
             lambda: shortcuts.assertNoInfNaN(numpy.array([numpy.nan]))).args[0][0] == ss
         assert cap_except(
             lambda: shortcuts.assertNoInfNaN(numpy.array([math.nan]))).args[0][0] == ss
+
+
+# assertInfNaN_float
+class Test_assertInfNaN_float():
+    def test_输入正无穷(self) -> None:
+        ss = '出现了Inf或NaN'
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN_float(numpy.inf)).args[0][0] == ss
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN_float(math.inf)).args[0][0] == ss
+
+    def test_输入负无穷(self) -> None:
+        ss = '出现了Inf或NaN'
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN_float(-numpy.inf)).args[0][0] == ss
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN_float(-math.inf)).args[0][0] == ss
+
+    def test_输入NaN(self) -> None:
+        ss = '出现了Inf或NaN'
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN_float(numpy.nan)).args[0][0] == ss
+        assert cap_except(
+            lambda: shortcuts.assertNoInfNaN_float(math.nan)).args[0][0] == ss

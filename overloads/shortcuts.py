@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime
+import math
 import os
 import pickle
 from typing import Any, Optional, Tuple
@@ -39,3 +40,7 @@ def assertNoInfNaN(x: numpy.ndarray[numpy.float64]) -> None:
     idx = numpy.where(numpy.logical_not(numpy.isfinite(xx)))  # type: ignore
     count = idx[0].shape[0]
     assert count == 0, ('出现了Inf或NaN', xx[idx], idx)
+
+
+def assertNoInfNaN_float(x: float) -> None:
+    assert math.isfinite(x), ('出现了Inf或NaN', x)
