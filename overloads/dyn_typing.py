@@ -208,7 +208,7 @@ class NDArray(DepType):
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, _numpy.ndarray):
             return False
-        if _numpy.isfortran(value) != self.isfortran:  # type: ignore
+        if _numpy.isfortran(value) != self.isfortran:
             return False
         if value.dtype.type != self.dtype:
             return False
@@ -316,6 +316,14 @@ class Class(DepType):
 
     def _isinstance(self, value: _Any) -> bool:
         return isinstance(value, self.dtype)
+
+
+class Bool(DepType):
+    def __init__(self) -> None:
+        self.using = set()
+
+    def _isinstance(self, value: _Any) -> bool:
+        return isinstance(value, bool)
 
 
 class Int(DepType):

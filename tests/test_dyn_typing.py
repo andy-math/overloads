@@ -22,6 +22,11 @@ class Test():
         assert T.isinstance(numpy.zeros((3, 4)))
         assert not T.isinstance(numpy.zeros((3, 3)))
 
+    def test_Bool(self) -> None:
+        assert dyn_typing.Bool().isinstance(True)
+        assert dyn_typing.Bool().isinstance(False)
+        assert not dyn_typing.Bool().isinstance(1)
+
     def test_Int(self) -> None:
         assert dyn_typing.Int().isinstance(1)
         assert not dyn_typing.Int().isinstance(1.0)
