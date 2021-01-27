@@ -342,6 +342,14 @@ class Float(DepType):
         return isinstance(value, float)
 
 
+class Callable(DepType):
+    def __init__(self) -> None:
+        self.using = set()
+
+    def _isinstance(self, value: _Any) -> bool:
+        return callable(value)
+
+
 _T1 = _TypeVar('_T1')
 _T2 = _TypeVar('_T2')
 _T3 = _TypeVar('_T3')
