@@ -15,7 +15,7 @@ class Test():
         assert not T.isinstance(numpy.zeros((2, 4), dtype=numpy.int64))
         assert not T.isinstance(numpy.zeros((2, 4, 5)))
         assert not T.isinstance(1)
-        assert not T.isinstance(numpy.zeros((2, 4), order='F'))
+        assert T.isinstance(numpy.zeros((2, 4), order='F'))
         a = SizeVar()
         T = dyn_typing.NDArray(numpy.float64, (a, a + 1))
         assert T.isinstance(numpy.zeros((2, 3)))
