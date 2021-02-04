@@ -55,6 +55,22 @@ def cap_except(f: Any) -> AssertionError:
         return e
 
 
+# assertNaN
+class Test_assertNaN():
+    def test_输入正无穷(self) -> None:
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([numpy.inf]))) is None
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([math.inf]))) is None
+
+    def test_输入负无穷(self) -> None:
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([-numpy.inf]))) is None
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([-math.inf]))) is None
+
+    def test_输入NaN(self) -> None:
+        ss = '出现了NaN'
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([numpy.nan]))).args[0][0] == ss
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([math.nan]))).args[0][0] == ss
+
+
 # assertInfNaN
 class Test_assertInfNaN():
     def test_输入正无穷(self) -> None:
@@ -83,21 +99,15 @@ class Test_assertInfNaN():
 class Test_assertInfNaN_float():
     def test_输入正无穷(self) -> None:
         ss = '出现了Inf或NaN'
-        assert cap_except(
-            lambda: shortcuts.assertNoInfNaN_float(numpy.inf)).args[0][0] == ss
-        assert cap_except(
-            lambda: shortcuts.assertNoInfNaN_float(math.inf)).args[0][0] == ss
+        assert cap_except(lambda: shortcuts.assertNoInfNaN_float(numpy.inf)).args[0][0] == ss
+        assert cap_except(lambda: shortcuts.assertNoInfNaN_float(math.inf)).args[0][0] == ss
 
     def test_输入负无穷(self) -> None:
         ss = '出现了Inf或NaN'
-        assert cap_except(
-            lambda: shortcuts.assertNoInfNaN_float(-numpy.inf)).args[0][0] == ss
-        assert cap_except(
-            lambda: shortcuts.assertNoInfNaN_float(-math.inf)).args[0][0] == ss
+        assert cap_except(lambda: shortcuts.assertNoInfNaN_float(-numpy.inf)).args[0][0] == ss
+        assert cap_except(lambda: shortcuts.assertNoInfNaN_float(-math.inf)).args[0][0] == ss
 
     def test_输入NaN(self) -> None:
         ss = '出现了Inf或NaN'
-        assert cap_except(
-            lambda: shortcuts.assertNoInfNaN_float(numpy.nan)).args[0][0] == ss
-        assert cap_except(
-            lambda: shortcuts.assertNoInfNaN_float(math.nan)).args[0][0] == ss
+        assert cap_except(lambda: shortcuts.assertNoInfNaN_float(numpy.nan)).args[0][0] == ss
+        assert cap_except(lambda: shortcuts.assertNoInfNaN_float(math.nan)).args[0][0] == ss

@@ -34,6 +34,14 @@ def timestamp(*,
     return timestr
 
 
+def assertNoNaN(x: numpy.ndarray[numpy.float64]) -> None:
+    idx: Tuple[numpy.ndarray[numpy.int64], ...]
+    xx = x.reshape((1, ) if x.shape == () else x.shape)
+    idx = numpy.where(numpy.isnan(xx))
+    count = idx[0].shape[0]
+    assert count == 0, ('出现了NaN', xx[idx], idx)
+
+
 def assertNoInfNaN(x: numpy.ndarray[numpy.float64]) -> None:
     idx: Tuple[numpy.ndarray[numpy.int64], ...]
     xx = x.reshape((1, ) if x.shape == () else x.shape)
