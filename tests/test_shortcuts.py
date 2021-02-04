@@ -50,7 +50,7 @@ class Test_时间戳检查():
 def cap_except(f: Any) -> AssertionError:
     try:
         f()
-        assert False
+        return AssertionError(None)
     except AssertionError as e:
         return e
 
@@ -58,12 +58,12 @@ def cap_except(f: Any) -> AssertionError:
 # assertNaN
 class Test_assertNaN():
     def test_输入正无穷(self) -> None:
-        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([numpy.inf]))) is None
-        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([math.inf]))) is None
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([numpy.inf]))).args[0] is None
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([math.inf]))).args[0] is None
 
     def test_输入负无穷(self) -> None:
-        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([-numpy.inf]))) is None
-        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([-math.inf]))) is None
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([-numpy.inf]))).args[0] is None
+        assert cap_except(lambda: shortcuts.assertNoNaN(numpy.array([-math.inf]))).args[0] is None
 
     def test_输入NaN(self) -> None:
         ss = '出现了NaN'
