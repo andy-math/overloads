@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import multiprocessing.pool
 from typing import Callable, Dict, List, Optional, Sequence, Tuple, TypeVar, Union
 
@@ -9,7 +10,6 @@ from overloads.capture_exceptions import Captured_Exception, capture_exceptions
 param_t = TypeVar("param_t")
 return_t = TypeVar("return_t")
 pool: Optional[multiprocessing.pool.Pool] = None
-output: List[str] = []
 
 
 def launch_parpool() -> None:
@@ -19,18 +19,12 @@ def launch_parpool() -> None:
     pool = multiprocessing.pool.Pool(processes)
 
 
-def parprint(*values: object, sep: str = " ", end: str = "\n") -> None:
-    output.append(sep.join((str(value) for value in values)) + end)
-
-
 def helper(
     info_tuple: Tuple[int, Callable[[param_t], return_t], param_t]
-) -> Tuple[int, Union[return_t, Captured_Exception[return_t]], str]:
+) -> Tuple[int, Union[return_t, Captured_Exception[return_t]]]:
     idx, f, arg = info_tuple
     value = capture_exceptions(f, arg)
-    output_str = "".join(output)
-    output.clear()
-    return idx, value, output_str
+    return idx, value
 
 
 def print_without_line_feed(*values: object) -> None:
@@ -43,17 +37,42 @@ def parfor(
     *,
     callback: Optional[
         Callable[[Union[return_t, Captured_Exception[return_t]]], None]
-    ] = None
+    ] = None,
+    print_time: bool = False,
+    task_name: Optional[str] = None,
 ) -> List[Union[return_t, Captured_Exception[return_t]]]:
+    def timedelta2str(T: datetime.timedelta) -> str:
+        s = str(T)
+        return s[: s.rfind(".")]
+
     if pool is None:
         launch_parpool()
         assert pool is not None
     helper_arg_list = ((idx, f, arg) for idx, arg in enumerate(arg_list))
     result_dict: Dict[int, Union[return_t, Captured_Exception[return_t]]] = {}
-    for idx, result, output in pool.imap_unordered(helper, helper_arg_list):
-        print_without_line_feed(output)
+    num_total = len(arg_list)
+    num_finished = 0
+    time_start = datetime.datetime.now()
+    for idx, result in pool.imap_unordered(helper, helper_arg_list):
+        num_finished += 1
+        time_now = datetime.datetime.now()
+        time_elapsed = time_now - time_start
+        time_need = ((num_total - num_finished) / num_finished) * time_elapsed
         if isinstance(result, Captured_Exception):
             print_without_line_feed("[{}]: {}\n".format(idx, result))
+        if print_time:
+            assert task_name is not None
+            print_without_line_feed(
+                "{}\n\t已完成{}/{}, {:05.2f}%, 已用{}, 预计还需{}, 结束时间{:%Y-%m-%d %H:%M:%S}\n".format(  # noqa: E501
+                    task_name,
+                    num_finished,
+                    num_total,
+                    100 * num_finished / num_total,
+                    timedelta2str(time_elapsed),
+                    timedelta2str(time_need),
+                    time_now + time_need,
+                )
+            )
         if callback is not None:
             callback(result)
         result_dict[idx] = result
