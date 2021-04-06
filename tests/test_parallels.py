@@ -47,7 +47,13 @@ def callback(
 
 class TestCase():
     def test_顺序性(self) -> None:
-        res = parallels.parfor(f, range(10), callback=callback)
+        res = parallels.parfor(
+            f,
+            range(10),
+            callback=callback,
+            print_time=True,
+            task_name="whatever",
+        )
         for i in range(10):
             r = res[i]
             assert not isinstance(r, Captured_Exception)
@@ -63,13 +69,11 @@ class TestCase():
 
     def test_helper(self) -> None:
         def f(a: int) -> int:
-            parallels.parprint('aaabbb能用就行', '', '', sep='sep', end='end')
             return a * a
 
         idx = 0
         arg = 2
         info_tuple = (idx, f, arg)
-        iidx, res, out = parallels.helper(info_tuple)
-        assert out == 'aaabbb能用就行sepsepend'
+        iidx, res = parallels.helper(info_tuple)
         assert iidx == idx
         assert res == 4
