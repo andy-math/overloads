@@ -197,9 +197,11 @@ class Test_isunique:
         assert shortcuts.isunique([1])
         assert shortcuts.isunique([1, "1"])
         assert shortcuts.isunique([1, 2])
+        assert not shortcuts.isunique([1, 1])
 
     def test_元祖(self) -> None:
         assert shortcuts.isunique(())
         assert shortcuts.isunique((1,))
         assert shortcuts.isunique((1, "1"))
         assert shortcuts.isunique((1, 2))
+        assert not shortcuts.isunique((1, 1))
