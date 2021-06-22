@@ -336,6 +336,14 @@ class Float(DepType):
         return isinstance(value, float)
 
 
+class Str(DepType):
+    def __init__(self) -> None:
+        self.using = set()
+
+    def _isinstance(self, value: _Any) -> bool:
+        return isinstance(value, str)
+
+
 class Callable(DepType):
     def __init__(self) -> None:
         self.using = set()
