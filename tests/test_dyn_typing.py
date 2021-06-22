@@ -36,8 +36,8 @@ class Test:
         assert not dyn_typing.Float().isinstance(1)
 
     def test_Str(self) -> None:
-        assert dyn_typing.Float().isinstance("1")
-        assert not dyn_typing.Float().isinstance(1)
+        assert dyn_typing.Str().isinstance("1")
+        assert not dyn_typing.Str().isinstance(1)
 
     def test_Callable(self) -> None:
         def f() -> None:
