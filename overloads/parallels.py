@@ -13,15 +13,15 @@ from overloads.capture_exceptions import Captured_Exception, capture_exceptions
 param_t = TypeVar("param_t")
 return_t = TypeVar("return_t")
 pool: Optional[multiprocessing.pool.Pool] = None
-queue: Optional[multiprocessing.Queue[Any]] = None
+queue: Optional[multiprocessing.SimpleQueue[Any]] = None
 
 
-def _set_queue(q: multiprocessing.Queue[Any]) -> None:
+def _set_queue(q: multiprocessing.SimpleQueue[Any]) -> None:
     global queue
     queue = q  # pragma: no cover
 
 
-def get_queue() -> multiprocessing.Queue[Any]:
+def get_queue() -> multiprocessing.SimpleQueue[Any]:
     assert queue is not None
     return queue
 
@@ -30,7 +30,7 @@ def launch_parpool() -> None:
     global pool, queue
     multiprocessing.set_start_method("spawn")
     processes: int = psutil.cpu_count(logical=False)
-    queue = multiprocessing.Queue()
+    queue = multiprocessing.SimpleQueue()
     pool = multiprocessing.pool.Pool(processes, _set_queue, (queue,))
 
 
