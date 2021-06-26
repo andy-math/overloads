@@ -22,6 +22,8 @@ def _set_queue(q: multiprocessing.SimpleQueue[Any]) -> None:
 
 
 def get_queue() -> multiprocessing.SimpleQueue[Any]:
+    if queue is None:
+        launch_parpool()  # pragma: no cover
     assert queue is not None
     return queue
 
