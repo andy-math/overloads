@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
+import multiprocessing
 import multiprocessing.pool
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, TypeVar, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, TypeVar, Union
 
 import psutil  # type: ignore
 
@@ -10,13 +11,25 @@ from overloads.capture_exceptions import Captured_Exception, capture_exceptions
 param_t = TypeVar("param_t")
 return_t = TypeVar("return_t")
 pool: Optional[multiprocessing.pool.Pool] = None
+queue: Optional[multiprocessing.Queue[Any]] = None
+
+
+def _set_queue(q: multiprocessing.Queue[Any]) -> None:
+    global queue
+    queue = q
+
+
+def get_queue() -> multiprocessing.Queue[Any]:
+    assert queue is not None
+    return queue
 
 
 def launch_parpool() -> None:
-    global pool
+    global pool, queue
     multiprocessing.set_start_method("spawn")
     processes: int = psutil.cpu_count(logical=False)
-    pool = multiprocessing.pool.Pool(processes)
+    queue = multiprocessing.Queue()
+    pool = multiprocessing.pool.Pool(processes, _set_queue, (queue,))
 
 
 def helper(
