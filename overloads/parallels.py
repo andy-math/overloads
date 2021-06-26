@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
+
 import datetime
 import multiprocessing
 import multiprocessing.pool
@@ -17,7 +18,7 @@ queue: Optional[multiprocessing.Queue[Any]] = None
 
 def _set_queue(q: multiprocessing.Queue[Any]) -> None:
     global queue
-    queue = q
+    queue = q  # pragma: no cover
 
 
 def get_queue() -> multiprocessing.Queue[Any]:
