@@ -22,7 +22,7 @@ def f(a: int) -> Tuple[int, Optional[int]]:
 
 def g(a: int) -> None:
     if a == 1:
-        raise E('aaa')
+        raise E("aaa")
 
 
 def h(a: int) -> int:
@@ -34,9 +34,11 @@ ident_set = set()
 
 
 def callback(
-    result: Union[Tuple[int, Optional[int]],  #
-                  Captured_Exception[Tuple[int, Optional[int]]]]
+    result: Union[
+        Tuple[int, Optional[int]], Captured_Exception[Tuple[int, Optional[int]]]  #
+    ]
 ) -> None:
+    assert parallels.get_queue() is not None
     assert not isinstance(result, Captured_Exception)
     a, ident = result
     assert 0 <= a and a < 10
@@ -45,7 +47,7 @@ def callback(
     assert ident != multiprocessing.current_process().ident
 
 
-class TestCase():
+class TestCase:
     def test_顺序性(self) -> None:
         res = parallels.parfor(
             f,
@@ -54,6 +56,7 @@ class TestCase():
             print_time=True,
             task_name="whatever",
         )
+        assert parallels.get_queue() is not None
         for i in range(10):
             r = res[i]
             assert not isinstance(r, Captured_Exception)
@@ -65,7 +68,7 @@ class TestCase():
         ce = parallels.parfor(g, [1])[0]
         assert isinstance(ce, Captured_Exception)
         assert isinstance(ce.exception, E)
-        assert ce.exception.args[0] == 'aaa'
+        assert ce.exception.args[0] == "aaa"
 
     def test_helper(self) -> None:
         def f(a: int) -> int:
