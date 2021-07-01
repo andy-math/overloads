@@ -84,11 +84,3 @@ class TestCase:
             print(multiprocessing.current_process().ident)
 
         parallels.forall(f, 1)
-
-    def test_forall_helper(self) -> None:
-        def f(a: int) -> None:
-            print(multiprocessing.current_process().ident)
-
-        arg = 2
-        info_tuple = (f, arg)
-        parallels.forall_helper(info_tuple)
