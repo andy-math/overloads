@@ -10,7 +10,7 @@ def f_0() -> Tuple[()]:
 
 @tuplize.tuplize_1
 def f_1(a: Any) -> Tuple[Any]:
-    return (a, )
+    return (a,)
 
 
 @tuplize.tuplize_2
@@ -34,35 +34,40 @@ def f_5(a: Any, b: Any, c: Any, d: Any, e: Any) -> Tuple[Any, Any, Any, Any, Any
 
 
 @tuplize.tuplize_6
-def f_6(a: Any, b: Any, c: Any, d: Any, e: Any, f: Any) -> Tuple[Any, Any, Any, Any, Any, Any]:
+def f_6(
+    a: Any, b: Any, c: Any, d: Any, e: Any, f: Any
+) -> Tuple[Any, Any, Any, Any, Any, Any]:
     return (a, b, c, d, e, f)
 
 
 @tuplize.tuplize_7
-def f_7(a: Any, b: Any, c: Any, d: Any, e: Any, f: Any,
-        g: Any) -> Tuple[Any, Any, Any, Any, Any, Any, Any]:
+def f_7(
+    a: Any, b: Any, c: Any, d: Any, e: Any, f: Any, g: Any
+) -> Tuple[Any, Any, Any, Any, Any, Any, Any]:
     return (a, b, c, d, e, f, g)
 
 
 @tuplize.tuplize_8
-def f_8(a: Any, b: Any, c: Any, d: Any, e: Any, f: Any, g: Any,
-        h: Any) -> Tuple[Any, Any, Any, Any, Any, Any, Any, Any]:
+def f_8(
+    a: Any, b: Any, c: Any, d: Any, e: Any, f: Any, g: Any, h: Any
+) -> Tuple[Any, Any, Any, Any, Any, Any, Any, Any]:
     return (a, b, c, d, e, f, g, h)
 
 
 @tuplize.tuplize_9
-def f_9(a: Any, b: Any, c: Any, d: Any, e: Any, f: Any, g: Any, h: Any,
-        i: Any) -> Tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any]:
+def f_9(
+    a: Any, b: Any, c: Any, d: Any, e: Any, f: Any, g: Any, h: Any, i: Any
+) -> Tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any]:
     return (a, b, c, d, e, f, g, h, i)
 
 
 f = (f_0, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8, f_9)
 
 
-class Test():
+class Test:
     def test_tup(self) -> None:
         assert f[0](()) == ()
-        assert f[1]((1, )) == (1, )
+        assert f[1]((1,)) == (1,)
         assert f[2]((1, 2)) == (1, 2)
         assert f[3]((1, 2, 3)) == (1, 2, 3)
         assert f[4]((1, 2, 3, 4)) == (1, 2, 3, 4)
