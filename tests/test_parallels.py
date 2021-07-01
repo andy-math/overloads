@@ -38,7 +38,6 @@ def callback(
         Tuple[int, Optional[int]], Captured_Exception[Tuple[int, Optional[int]]]  #
     ]
 ) -> None:
-    assert parallels.get_queue() is not None
     assert not isinstance(result, Captured_Exception)
     a, ident = result
     assert 0 <= a and a < 10
@@ -56,7 +55,6 @@ class TestCase:
             print_time=True,
             task_name="whatever",
         )
-        assert parallels.get_queue() is not None
         for i in range(10):
             r = res[i]
             assert not isinstance(r, Captured_Exception)
@@ -70,13 +68,28 @@ class TestCase:
         assert isinstance(ce.exception, E)
         assert ce.exception.args[0] == "aaa"
 
-    def test_helper(self) -> None:
+    def test_parfor_helper(self) -> None:
         def f(a: int) -> int:
             return a * a
 
         idx = 0
         arg = 2
         info_tuple = (idx, f, arg)
-        iidx, res = parallels.helper(info_tuple)
+        iidx, res = parallels.parfor_helper(info_tuple)
         assert iidx == idx
         assert res == 4
+
+    def test_forall(self) -> None:
+        def f(a: int) -> None:
+            print(multiprocessing.current_process().ident)
+
+        parallels.forall(f, 1)
+
+    def test_forall_helper(self) -> None:
+        def f(a: int) -> None:
+            print(multiprocessing.current_process().ident)
+
+        barrier = multiprocessing.Barrier(1)
+        arg = 2
+        info_tuple = (barrier, f, arg)
+        parallels.forall_helper(info_tuple)

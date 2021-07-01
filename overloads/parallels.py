@@ -4,7 +4,8 @@ from __future__ import annotations
 import datetime
 import multiprocessing
 import multiprocessing.pool
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, TypeVar, Union
+import multiprocessing.synchronize
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, TypeVar, Union
 
 import psutil  # type: ignore
 
@@ -13,20 +14,7 @@ from overloads.capture_exceptions import Captured_Exception, capture_exceptions
 param_t = TypeVar("param_t")
 return_t = TypeVar("return_t")
 pool: Optional[multiprocessing.pool.Pool] = None
-queue: Optional[multiprocessing.Queue[Any]] = None
 _spawn_setted: bool = False
-
-
-def _set_queue(q: multiprocessing.Queue[Any]) -> None:
-    global queue
-    queue = q  # pragma: no cover
-
-
-def get_queue() -> multiprocessing.Queue[Any]:
-    if queue is None:
-        launch_parpool()  # pragma: no cover
-    assert queue is not None
-    return queue
 
 
 def set_windows_compatible_start_method() -> None:
@@ -40,11 +28,10 @@ def launch_parpool() -> None:
     global pool, queue
     set_windows_compatible_start_method()
     processes: int = psutil.cpu_count(logical=False)
-    queue = multiprocessing.Queue()
-    pool = multiprocessing.pool.Pool(processes, _set_queue, (queue,))
+    pool = multiprocessing.pool.Pool(processes)
 
 
-def helper(
+def parfor_helper(
     info_tuple: Tuple[int, Callable[[param_t], return_t], param_t]
 ) -> Tuple[int, Union[return_t, Captured_Exception[return_t]]]:
     idx, f, arg = info_tuple
@@ -78,7 +65,7 @@ def parfor(
     num_total = len(arg_list)
     num_finished = 0
     time_start = datetime.datetime.now()
-    for idx, result in pool.imap_unordered(helper, helper_arg_list):
+    for idx, result in pool.imap_unordered(parfor_helper, helper_arg_list):
         num_finished += 1
         time_now = datetime.datetime.now()
         time_elapsed = time_now - time_start
@@ -103,3 +90,21 @@ def parfor(
         result_dict[idx] = result
     result_list = [result_dict[idx] for idx in range(len(arg_list))]
     return result_list
+
+
+def forall_helper(
+    info_tuple: Tuple[
+        multiprocessing.synchronize.Barrier, Callable[[param_t], None], param_t
+    ]
+) -> None:
+    barrier, f, arg = info_tuple
+    f(arg)
+    barrier.wait()
+
+
+def forall(f: Callable[[param_t], None], arg_list: param_t) -> None:
+    barrier = multiprocessing.Barrier(psutil.cpu_count(logical=False))
+    parfor(
+        forall_helper,
+        [(barrier, f, arg_list) for _ in range(psutil.cpu_count(logical=False))],
+    )
