@@ -30,6 +30,10 @@ def h(a: int) -> int:
     return a
 
 
+def ff(a: int) -> None:
+    print(multiprocessing.current_process().ident)
+
+
 ident_set = set()
 
 
@@ -80,7 +84,4 @@ class TestCase:
         assert res == 4
 
     def test_forall(self) -> None:
-        def f(a: int) -> None:
-            print(multiprocessing.current_process().ident)
-
-        parallels.forall(f, 1)
+        parallels.forall(ff, 1)
