@@ -14,7 +14,13 @@ from overloads.capture_exceptions import Captured_Exception, capture_exceptions
 param_t = TypeVar("param_t")
 return_t = TypeVar("return_t")
 pool: Optional[multiprocessing.pool.Pool] = None
+barrier: Optional[multiprocessing.synchronize.Barrier] = None
 _spawn_setted: bool = False
+
+
+def _set_barrier(b: multiprocessing.synchronize.Barrier) -> None:
+    global barrier
+    barrier = b
 
 
 def set_windows_compatible_start_method() -> None:
@@ -25,10 +31,11 @@ def set_windows_compatible_start_method() -> None:
 
 
 def launch_parpool() -> None:
-    global pool, queue
+    global pool, barrier
     set_windows_compatible_start_method()
     processes: int = psutil.cpu_count(logical=False)
-    pool = multiprocessing.pool.Pool(processes)
+    barrier = multiprocessing.Barrier(processes)
+    pool = multiprocessing.pool.Pool(processes, _set_barrier, (barrier,))
 
 
 def parfor_helper(
@@ -92,19 +99,17 @@ def parfor(
     return result_list
 
 
-def forall_helper(
-    info_tuple: Tuple[
-        multiprocessing.synchronize.Barrier, Callable[[param_t], None], param_t
-    ]
-) -> None:
-    barrier, f, arg = info_tuple
+def forall_helper(info_tuple: Tuple[Callable[[param_t], None], param_t]) -> None:
+    assert barrier is not None
+    f, arg = info_tuple
     f(arg)
     barrier.wait()
 
 
 def forall(f: Callable[[param_t], None], arg_list: param_t) -> None:
-    barrier = multiprocessing.Barrier(psutil.cpu_count(logical=False))
     parfor(
         forall_helper,
-        [(barrier, f, arg_list) for _ in range(psutil.cpu_count(logical=False))],
+        [(f, arg_list) for _ in range(psutil.cpu_count(logical=False))],
     )
+    assert barrier is not None
+    barrier.reset()
