@@ -19,8 +19,8 @@ _spawn_setted: bool = False
 
 
 def _set_barrier(b: multiprocessing.synchronize.Barrier) -> None:
-    global barrier
-    barrier = b
+    global barrier  # pragma: no cover
+    barrier = b  # pragma: no cover
 
 
 def set_windows_compatible_start_method() -> None:
@@ -100,10 +100,10 @@ def parfor(
 
 
 def forall_helper(info_tuple: Tuple[Callable[[param_t], None], param_t]) -> None:
-    assert barrier is not None
-    f, arg = info_tuple
-    f(arg)
-    barrier.wait()
+    assert barrier is not None  # pragma: no cover
+    f, arg = info_tuple  # pragma: no cover
+    f(arg)  # pragma: no cover
+    barrier.wait()  # pragma: no cover
 
 
 def forall(f: Callable[[param_t], None], arg_list: param_t) -> None:
