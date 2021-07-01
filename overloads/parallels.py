@@ -14,6 +14,7 @@ param_t = TypeVar("param_t")
 return_t = TypeVar("return_t")
 pool: Optional[multiprocessing.pool.Pool] = None
 queue: Optional[multiprocessing.Queue[Any]] = None
+_spawn_setted: bool = False
 
 
 def _set_queue(q: multiprocessing.Queue[Any]) -> None:
@@ -28,9 +29,16 @@ def get_queue() -> multiprocessing.Queue[Any]:
     return queue
 
 
+def set_windows_compatible_start_method() -> None:
+    global _spawn_setted
+    if not _spawn_setted:
+        multiprocessing.set_start_method("spawn")
+        _spawn_setted = True
+
+
 def launch_parpool() -> None:
     global pool, queue
-    multiprocessing.set_start_method("spawn")
+    set_windows_compatible_start_method()
     processes: int = psutil.cpu_count(logical=False)
     queue = multiprocessing.Queue()
     pool = multiprocessing.pool.Pool(processes, _set_queue, (queue,))
