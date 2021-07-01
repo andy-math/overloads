@@ -89,7 +89,6 @@ class TestCase:
         def f(a: int) -> None:
             print(multiprocessing.current_process().ident)
 
-        barrier = multiprocessing.Barrier(1)
         arg = 2
-        info_tuple = (barrier, f, arg)
+        info_tuple = (f, arg)
         parallels.forall_helper(info_tuple)
