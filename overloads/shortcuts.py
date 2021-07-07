@@ -9,6 +9,8 @@ from typing import Any, Collection, Optional, Tuple, TypeVar
 
 import numpy
 
+from overloads.typing import ndarray
+
 
 def save(filename: str, object: Any) -> None:
     path, basename = os.path.split(filename)
@@ -34,7 +36,7 @@ def timestamp(
     return timestr
 
 
-def assertNoNaN(x: numpy.ndarray[Tuple[int, ...], numpy.dtype[numpy.float64]]) -> None:
+def assertNoNaN(x: ndarray) -> None:
     idx: Tuple[numpy.ndarray[Tuple[int], numpy.dtype[numpy.int64]], ...]
     xx = x.reshape((1,)) if x.shape == () else x
     idx = numpy.where(numpy.isnan(xx))
@@ -42,9 +44,7 @@ def assertNoNaN(x: numpy.ndarray[Tuple[int, ...], numpy.dtype[numpy.float64]]) -
     assert count == 0, ("出现了NaN", xx[idx], idx)
 
 
-def assertNoInfNaN(
-    x: numpy.ndarray[Tuple[int, ...], numpy.dtype[numpy.float64]]
-) -> None:
+def assertNoInfNaN(x: ndarray) -> None:
     idx: Tuple[numpy.ndarray[Tuple[int], numpy.dtype[numpy.int64]], ...]
     xx = x.reshape((1,)) if x.shape == () else x
     idx = numpy.where(numpy.logical_not(numpy.isfinite(xx)))

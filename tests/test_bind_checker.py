@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import math
-from typing import Tuple
 
 import numpy
 from overloads import bind_checker, tuplize
 from overloads.capture_exceptions import Captured_Exception, capture_exceptions
 from overloads.shortcuts import assertNoInfNaN
+from overloads.typing import ndarray as NDArray
 
 checker = (
     bind_checker.make_checker_0(assertNoInfNaN),
@@ -111,9 +111,6 @@ class TestMaker:
         assert isinstance(cce_7.exception, AssertionError)
         assert isinstance(cce_8.exception, AssertionError)
         assert isinstance(cce_9.exception, AssertionError)
-
-
-NDArray = numpy.ndarray[Tuple[int, ...], numpy.dtype[numpy.float64]]
 
 
 def outcheck(_: None) -> None:
