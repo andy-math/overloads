@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import math
-from typing import TYPE_CHECKING
+from typing import Tuple
 
 import numpy
 from overloads import bind_checker, tuplize
@@ -113,10 +113,7 @@ class TestMaker:
         assert isinstance(cce_9.exception, AssertionError)
 
 
-if TYPE_CHECKING:
-    NDArray = numpy.ndarray
-else:
-    NDArray = numpy.ndarray
+NDArray = numpy.ndarray[Tuple[int, ...], numpy.dtype[numpy.float64]]
 
 
 def outcheck(_: None) -> None:
