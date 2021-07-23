@@ -4,7 +4,6 @@ import copy
 from typing import (
     Any,
     Callable,
-    Dict,
     Generic,
     List,
     Optional,
@@ -25,34 +24,30 @@ Exceptions_t = Union[BaseException_t, Tuple[BaseException_t, ...]]
 class Captured_Exception(Generic[return_t]):
     f: Optional[Callable[..., return_t]]
     args: Tuple[Any, ...]
-    kwargs: Dict[str, Any]
     exception: BaseException
 
     def __init__(
         self,
         f: Callable[..., return_t],
         args: Tuple[Any, ...],
-        kwargs: Dict[str, Any],
         exception: BaseException,
     ):
         self.f = copy.deepcopy(f)
         self.args = copy.deepcopy(args)
-        self.kwargs = copy.deepcopy(kwargs)
         self.exception = copy.deepcopy(exception)
 
     def __call__(self) -> return_t:
         assert self.f is not None
-        return self.f(*self.args, **self.kwargs)
+        return self.f(*self.args)
 
     def __str__(self) -> str:
         assert self.f is not None
         fmtstr = "".join(
             [
-                "{T}(f={f}, len(args)={nargs}, len(kwargs)={nkwargs}, e={e})".format(
+                "{T}(f={f}, len(args)={nargs}, e={e})".format(
                     T=Captured_Exception.__name__,
                     f="{}.{}".format(self.f.__module__, self.f.__name__),
                     nargs=len(self.args),
-                    nkwargs=len(self.kwargs),
                     e=type(self.exception).__name__,
                 ),
                 " with the following exception:\n    {}".format(
@@ -76,7 +71,7 @@ def capture_exceptions(
     except catch as e:
         if isinstance(e, without):
             raise e
-        return Captured_Exception(f, (_arg,), {}, e)
+        return Captured_Exception(f, (_arg,), e)
 
 
 def map(

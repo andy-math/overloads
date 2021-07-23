@@ -2,10 +2,11 @@
 import math
 
 import numpy
+
 from overloads import bind_checker, tuplize
 from overloads.capture_exceptions import Captured_Exception, capture_exceptions
 from overloads.shortcuts import assertNoInfNaN
-from overloads.typing import ndarray as NDArray
+from overloads.typedefs import ndarray as NDArray
 
 checker = (
     bind_checker.make_checker_0(assertNoInfNaN),

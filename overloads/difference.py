@@ -4,7 +4,7 @@ import numpy
 
 from overloads import bind_checker
 from overloads.shortcuts import assertNoInfNaN, assertNoInfNaN_float
-from overloads.typing import ndarray
+from overloads.typedefs import ndarray
 
 
 @bind_checker.bind_checker_2(

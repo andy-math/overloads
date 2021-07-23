@@ -9,7 +9,7 @@ from typing import Any, Collection, Optional, Tuple, TypeVar
 
 import numpy
 
-from overloads.typing import ndarray
+from overloads.typedefs import ndarray
 
 
 def save(filename: str, object: Any) -> None:
