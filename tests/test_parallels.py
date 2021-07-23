@@ -39,7 +39,7 @@ ident_set = set()
 
 def callback(
     result: Union[
-        Tuple[int, Optional[int]], Captured_Exception[Tuple[int, Optional[int]]]  #
+        Tuple[int, Optional[int]], Captured_Exception[int, Tuple[int, Optional[int]]]
     ]
 ) -> None:
     assert not isinstance(result, Captured_Exception)

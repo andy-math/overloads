@@ -40,7 +40,7 @@ def launch_parpool() -> None:
 
 def parfor_helper(
     info_tuple: Tuple[int, Callable[[param_t], return_t], param_t]
-) -> Tuple[int, Union[return_t, Captured_Exception[return_t]]]:
+) -> Tuple[int, Union[return_t, Captured_Exception[param_t, return_t]]]:
     idx, f, arg = info_tuple
     value = capture_exceptions(f, arg)
     return idx, value
@@ -55,11 +55,11 @@ def parfor(
     arg_list: Sequence[param_t],
     *,
     callback: Optional[
-        Callable[[Union[return_t, Captured_Exception[return_t]]], None]
+        Callable[[Union[return_t, Captured_Exception[param_t, return_t]]], None]
     ] = None,
     print_time: bool = False,
     task_name: Optional[str] = None,
-) -> List[Union[return_t, Captured_Exception[return_t]]]:
+) -> List[Union[return_t, Captured_Exception[param_t, return_t]]]:
     def timedelta2str(T: datetime.timedelta) -> str:
         s = str(T)
         return s[: s.rfind(".")]
@@ -68,7 +68,7 @@ def parfor(
         launch_parpool()
         assert pool is not None
     helper_arg_list = ((idx, f, arg) for idx, arg in enumerate(arg_list))
-    result_dict: Dict[int, Union[return_t, Captured_Exception[return_t]]] = {}
+    result_dict: Dict[int, Union[return_t, Captured_Exception[param_t, return_t]]] = {}
     num_total = len(arg_list)
     num_finished = 0
     time_start = datetime.datetime.now()

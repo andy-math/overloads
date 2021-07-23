@@ -2,7 +2,6 @@
 
 import copy
 from typing import (
-    Any,
     Callable,
     Generic,
     List,
@@ -21,19 +20,19 @@ BaseException_t = Type[BaseException]
 Exceptions_t = Union[BaseException_t, Tuple[BaseException_t, ...]]
 
 
-class Captured_Exception(Generic[return_t]):
-    f: Optional[Callable[..., return_t]]
-    args: Tuple[Any, ...]
+class Captured_Exception(Generic[param_t, return_t]):
+    f: Optional[Callable[[param_t], return_t]]
+    args: Tuple[param_t]
     exception: BaseException
 
     def __init__(
         self,
         f: Callable[..., return_t],
-        args: Tuple[Any, ...],
+        args: param_t,
         exception: BaseException,
     ):
         self.f = copy.deepcopy(f)
-        self.args = copy.deepcopy(args)
+        self.args = (copy.deepcopy(args),)
         self.exception = copy.deepcopy(exception)
 
     def __call__(self) -> return_t:
@@ -44,10 +43,10 @@ class Captured_Exception(Generic[return_t]):
         assert self.f is not None
         fmtstr = "".join(
             [
-                "{T}(f={f}, len(args)={nargs}, e={e})".format(
+                "{T}(f={f}, args={args}, e={e})".format(
                     T=Captured_Exception.__name__,
                     f="{}.{}".format(self.f.__module__, self.f.__name__),
-                    nargs=len(self.args),
+                    args=self.args,
                     e=type(self.exception).__name__,
                 ),
                 " with the following exception:\n    {}".format(
@@ -64,14 +63,14 @@ def capture_exceptions(
     *,
     catch: Exceptions_t = BaseException,
     without: Exceptions_t = ()
-) -> Union[return_t, Captured_Exception[return_t]]:
+) -> Union[return_t, Captured_Exception[param_t, return_t]]:
     _arg = copy.deepcopy(arg)
     try:
         return f(arg)
     except catch as e:
         if isinstance(e, without):
             raise e
-        return Captured_Exception(f, (_arg,), e)
+        return Captured_Exception(f, _arg, e)
 
 
 def map(
@@ -80,8 +79,8 @@ def map(
     *,
     catch: Exceptions_t = BaseException,
     without: Exceptions_t = ()
-) -> List[Union[return_t, Captured_Exception[return_t]]]:
-    result_list: List[Union[return_t, Captured_Exception[return_t]]] = []
+) -> List[Union[return_t, Captured_Exception[param_t, return_t]]]:
+    result_list: List[Union[return_t, Captured_Exception[param_t, return_t]]] = []
     for idx, arg in enumerate(args):
         result = capture_exceptions(f, arg, catch=catch, without=without)
         if isinstance(result, Captured_Exception):
