@@ -110,7 +110,7 @@ class _exception_capturer(Generic[param_t, return_t]):
         if isinstance(__exc_value, self.without):
             return False
         if __exc_value is None or __traceback is None:
-            return False
+            return False  # pragma: no cover
         self.e = __exc_value
         self.trace = "\n".join(traceback.format_tb(__traceback))
         return True
@@ -123,7 +123,7 @@ def capture_exceptions(
     [Callable[[param_t], return_t]],
     Callable[[param_t], Union[return_t, Captured_Exception[param_t, return_t]]],
 ]:
-    pass
+    pass  # pragma: no cover
 
 
 @overload
@@ -133,7 +133,7 @@ def capture_exceptions(
     catch: Exceptions_t = BaseException,
     without: Exceptions_t = ()
 ) -> Callable[[param_t], Union[return_t, Captured_Exception[param_t, return_t]]]:
-    pass
+    pass  # pragma: no cover
 
 
 @overload
@@ -144,7 +144,7 @@ def capture_exceptions(
     catch: Exceptions_t = BaseException,
     without: Exceptions_t = ()
 ) -> Union[return_t, Captured_Exception[param_t, return_t]]:
-    pass
+    pass  # pragma: no cover
 
 
 def capture_exceptions(  # type: ignore
