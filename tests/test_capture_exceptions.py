@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import pickle
+
 from overloads import capture_exceptions
 
 
@@ -59,6 +61,26 @@ class Test:
         assert ce_list[0].exception.args[0] == "将返回自身"
         assert ce_list[1] == 4
 
+    def test_picklable(self) -> None:
+        """
+        包装器伪装为原f，pickle后从真正的原函数进行load，
+        而原函数没有包装，因此发生了unwrap，调用f(1)触发异常
+        """
+        assert isinstance(
+            capture_exceptions.capture_exceptions(
+                lambda _: pickle.loads(
+                    pickle.dumps(capture_exceptions.capture_exceptions()(f))
+                )(1),
+                (),
+            ),
+            capture_exceptions.Captured_Exception,
+        )
+        """
+        没有包装伪装，则可以捕获save/load后的异常
+        """
+        ff = pickle.loads(pickle.dumps(capture_exceptions.capture_exceptions(f)))
+        assert isinstance(ff(1), capture_exceptions.Captured_Exception)
+
 
 if __name__ == "__main__":
     t = Test()
@@ -68,3 +90,4 @@ if __name__ == "__main__":
     t.test_正常情形()
     t.test_过滤Without()
     t.test_重放()
+    t.test_picklable()

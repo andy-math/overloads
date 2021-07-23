@@ -180,7 +180,7 @@ def capture_exceptions(  # type: ignore
         return ecap
 
     if f is None:
-        assert args is None
+        assert not len(args)
         return lambda f: wraps(f, wraps=True)
     elif not len(args):
         return wraps(f, wraps=False)
