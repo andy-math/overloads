@@ -56,7 +56,7 @@ class Test:
         assert ee.args == ce.exception.args
 
     def test_map(self) -> None:
-        ce_list = capture_exceptions.map(f, [1, 2])
+        ce_list = capture_exceptions.map(f, (1, 2))
         assert isinstance(ce_list[0], capture_exceptions.Captured_Exception)
         assert isinstance(ce_list[0].exception, E)
         assert ce_list[0].exception.args[0] == "将返回自身"

@@ -34,9 +34,9 @@ def _bind_checker_unsafe(
 
 
 def bind_checker_0(
-    *, input: _Callable[[_Tuple[()]], None], output: _Callable[[_return_t], None]
+    *, output: _Callable[[_return_t], None]
 ) -> _Callable[[_Callable[[], _return_t]], _Callable[[], _return_t]]:
-    return _bind_checker_unsafe(input=input, output=output)
+    return _bind_checker_unsafe(input=lambda _: None, output=output)
 
 
 def bind_checker_1(

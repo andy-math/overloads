@@ -119,7 +119,7 @@ def outcheck(_: None) -> None:
 
 
 @tuplize.tuplize_0
-@bind_checker.bind_checker_0(input=checker[0], output=outcheck)
+@bind_checker.bind_checker_0(output=outcheck)
 def f_0() -> None:
     return
 
