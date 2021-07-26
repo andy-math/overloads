@@ -5,8 +5,17 @@ import copy
 import functools
 import traceback
 from types import TracebackType
-from typing import (Callable, Generic, List, Optional, Sequence, Tuple, Type,
-                    TypeVar, Union, overload)
+from typing import (
+    Callable,
+    Generic,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    overload,
+)
 
 param_t = TypeVar("param_t")
 return_t = TypeVar("return_t")
@@ -173,7 +182,7 @@ def capture_exceptions(  # type: ignore
 
 def map(
     f: Callable[[param_t], return_t],
-    args: Sequence[param_t],
+    args: Tuple[param_t, ...],
     *,
     catch: Exceptions_t = BaseException,
     without: Exceptions_t = ()
