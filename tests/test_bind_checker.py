@@ -155,6 +155,12 @@ def outcheck(_: None) -> None:
     return
 
 
+@tuplize.tuplize_0
+@bind_checker.bind_checker_0(output=outcheck)
+def f_0() -> None:
+    return
+
+
 @tuplize.tuplize_1
 @bind_checker.bind_checker_1(input=checker[1], output=outcheck)
 def f_1(a: NDArray) -> None:
@@ -230,11 +236,12 @@ def f_9(
     return
 
 
-checker2 = (None, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8, f_9)
+checker2 = (f_0, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8, f_9)
 
 
 class TestBinding:
     def test_1(self) -> None:
+        checker2[0](())
         checker2[1]((dataOK,))
         checker2[2]((dataOK, dataOK))
         checker2[3]((dataOK, dataOK, dataOK))
