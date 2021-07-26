@@ -5,18 +5,8 @@ import copy
 import functools
 import traceback
 from types import TracebackType
-from typing import (
-    Callable,
-    Generic,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import (Callable, Generic, List, Optional, Sequence, Tuple, Type,
+                    TypeVar, Union, overload)
 
 param_t = TypeVar("param_t")
 return_t = TypeVar("return_t")
@@ -67,12 +57,11 @@ class Captured_Exception(Generic[param_t, return_t]):
 
 
 class _exception_capturer(Generic[param_t, return_t]):
-    entered = False
     f: Optional[Callable[[param_t], return_t]]
+    arg: param_t
     catch: Exceptions_t
     without: Exceptions_t
-    e: BaseException
-    trace: str
+    ce: Optional[Captured_Exception[param_t, return_t]]
 
     def __init__(
         self,
@@ -84,35 +73,30 @@ class _exception_capturer(Generic[param_t, return_t]):
         self.f = f
         self.catch = catch
         self.without = without
+        self.ce = None
 
-    def __call__(
-        self, arg: param_t
-    ) -> Union[return_t, Captured_Exception[param_t, return_t]]:
+    def __call__(self, arg: param_t) -> return_t:
+        self.arg = copy.deepcopy(arg)
         assert self.f is not None
-        _arg = copy.deepcopy(arg)
-        with self:
-            return self.f(arg)
-        return Captured_Exception(self.f, _arg, self.e, self.trace)
+        return self.f(arg)
 
     def __enter__(self) -> _exception_capturer[param_t, return_t]:
-        assert not self.entered
-        self.entered = True
         return self
 
     def __exit__(
         self,
-        _: Optional[Type[BaseException]],
-        __exc_value: Optional[BaseException],
-        __traceback: Optional[TracebackType],
+        _: Type[BaseException],
+        __exc_value: BaseException,
+        __traceback: TracebackType,
     ) -> bool:
         if not isinstance(__exc_value, self.catch):
             return False
         if isinstance(__exc_value, self.without):
             return False
-        if __exc_value is None or __traceback is None:
-            return False  # pragma: no cover
-        self.e = __exc_value
-        self.trace = "\n".join(traceback.format_tb(__traceback))
+        e = __exc_value
+        trace = "\n".join(traceback.format_tb(__traceback))
+        assert self.f is not None
+        self.ce = Captured_Exception(self.f, self.arg, e, trace)
         return True
 
 
@@ -167,17 +151,16 @@ def capture_exceptions(  # type: ignore
     def wraps(
         f: Callable[[param_t], return_t], *, wraps: bool
     ) -> Callable[[param_t], Union[return_t, Captured_Exception[param_t, return_t]]]:
-        ecap: Callable[
-            [param_t],
-            Union[
-                return_t,
-                Captured_Exception[param_t, return_t],
-            ],
-        ]
-        ecap = _exception_capturer(f, catch=catch, without=without)
-        if wraps:
-            ecap = functools.wraps(f)(ecap)
-        return ecap
+        def capturer(
+            param: param_t,
+        ) -> Union[return_t, Captured_Exception[param_t, return_t]]:
+            cap = _exception_capturer(f, catch=catch, without=without)
+            with cap:
+                return cap(param)
+            assert cap.ce is not None
+            return cap.ce
+
+        return functools.wraps(f)(capturer) if wraps else capturer
 
     if f is None:
         assert not len(args)

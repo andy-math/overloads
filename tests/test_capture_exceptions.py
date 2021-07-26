@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pickle
+from typing import Callable, cast
 
 from overloads import capture_exceptions
 
@@ -64,22 +65,35 @@ class Test:
     def test_picklable(self) -> None:
         """
         包装器伪装为原f，pickle后从真正的原函数进行load，
-        而原函数没有包装，因此发生了unwrap，调用f(1)触发异常
+        触发save函数体与load结果不同的异常
         """
-        assert isinstance(
-            capture_exceptions.capture_exceptions(
-                lambda _: pickle.loads(
-                    pickle.dumps(capture_exceptions.capture_exceptions()(f))
-                )(1),
-                (),
-            ),
-            capture_exceptions.Captured_Exception,
+        ce = capture_exceptions.capture_exceptions(
+            lambda _: cast(
+                Callable[[int], int],
+                pickle.loads(pickle.dumps(capture_exceptions.capture_exceptions()(f))),
+            )(1),
+            (),
         )
+        assert isinstance(ce, capture_exceptions.Captured_Exception)
+        assert isinstance(ce.exception, pickle.PicklingError)
+        assert isinstance(ce.exception.args[0], str)
+        assert ce.exception.args[0].startswith("Can't pickle")
+        assert "it's not the same object as" in ce.exception.args[0]
         """
-        没有包装伪装，则可以捕获save/load后的异常
+        没有包装伪装，则save/load不可用
         """
-        ff = pickle.loads(pickle.dumps(capture_exceptions.capture_exceptions(f)))
-        assert isinstance(ff(1), capture_exceptions.Captured_Exception)
+        ce = capture_exceptions.capture_exceptions(
+            lambda _: cast(
+                Callable[[int], int],
+                pickle.loads(pickle.dumps(capture_exceptions.capture_exceptions(f))),
+            )(1),
+            (),
+        )
+        assert isinstance(ce, capture_exceptions.Captured_Exception)
+        assert isinstance(ce.exception, AttributeError)
+        assert isinstance(ce.exception.args[0], str)
+        assert ce.exception.args[0].startswith("Can't pickle local object")
+        assert ".<locals>" in ce.exception.args[0]
 
 
 if __name__ == "__main__":
