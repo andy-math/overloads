@@ -144,7 +144,7 @@ class SizeExpr(DepSize):
 
     def __init__(
         self,
-        using: _Set[SizeVar],  # force line wrap
+        using: _Set[SizeVar],
         expr: _Callable[[], _Union[int, float]],
     ) -> None:
         self.using = using
@@ -389,25 +389,25 @@ def _dyn_check_unsafe(
 
 
 def dyn_check_0(
-    *, input: _Tuple[()], output: DepType  # force line wrap
+    *, input: _Tuple[()], output: DepType
 ) -> _Callable[[_Callable[[], return_t]], _Callable[[], return_t]]:
     return _dyn_check_unsafe(input=input, output=output)
 
 
 def dyn_check_1(
-    *, input: _Tuple[DepType], output: DepType  # force line wrap
+    *, input: _Tuple[DepType], output: DepType
 ) -> _Callable[[_Callable[[_T1], return_t]], _Callable[[_T1], return_t]]:
     return _dyn_check_unsafe(input=input, output=output)
 
 
 def dyn_check_2(
-    *, input: _Tuple[DepType, DepType], output: DepType  # force line wrap
+    *, input: _Tuple[DepType, DepType], output: DepType
 ) -> _Callable[[_Callable[[_T1, _T2], return_t]], _Callable[[_T1, _T2], return_t]]:
     return _dyn_check_unsafe(input=input, output=output)
 
 
 def dyn_check_3(
-    *, input: _Tuple[DepType, DepType, DepType], output: DepType  # force line wrap
+    *, input: _Tuple[DepType, DepType, DepType], output: DepType
 ) -> _Callable[
     [_Callable[[_T1, _T2, _T3], return_t]], _Callable[[_T1, _T2, _T3], return_t]
 ]:
@@ -415,9 +415,7 @@ def dyn_check_3(
 
 
 def dyn_check_4(
-    *,
-    input: _Tuple[DepType, DepType, DepType, DepType],
-    output: DepType  # force line wrap
+    *, input: _Tuple[DepType, DepType, DepType, DepType], output: DepType
 ) -> _Callable[
     [_Callable[[_T1, _T2, _T3, _T4], return_t]],
     _Callable[[_T1, _T2, _T3, _T4], return_t],
@@ -426,11 +424,9 @@ def dyn_check_4(
 
 
 def dyn_check_5(
-    *,
-    input: _Tuple[DepType, DepType, DepType, DepType, DepType],
-    output: DepType  # force line wrap
+    *, input: _Tuple[DepType, DepType, DepType, DepType, DepType], output: DepType
 ) -> _Callable[
-    [_Callable[[_T1, _T2, _T3, _T4, _T5], return_t]],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5], return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5], return_t],
 ]:
     return _dyn_check_unsafe(input=input, output=output)
@@ -439,9 +435,9 @@ def dyn_check_5(
 def dyn_check_6(
     *,
     input: _Tuple[DepType, DepType, DepType, DepType, DepType, DepType],
-    output: DepType  # force line wrap
+    output: DepType
 ) -> _Callable[
-    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6], return_t]],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6], return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5, _T6], return_t],
 ]:
     return _dyn_check_unsafe(input=input, output=output)
@@ -450,9 +446,9 @@ def dyn_check_6(
 def dyn_check_7(
     *,
     input: _Tuple[DepType, DepType, DepType, DepType, DepType, DepType, DepType],
-    output: DepType  # force line wrap
+    output: DepType
 ) -> _Callable[
-    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7], return_t]],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7], return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7], return_t],
 ]:
     return _dyn_check_unsafe(input=input, output=output)
@@ -463,9 +459,9 @@ def dyn_check_8(
     input: _Tuple[
         DepType, DepType, DepType, DepType, DepType, DepType, DepType, DepType
     ],
-    output: DepType  # force line wrap
+    output: DepType
 ) -> _Callable[
-    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8], return_t]],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8], return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8], return_t],
 ]:
     return _dyn_check_unsafe(input=input, output=output)
@@ -476,11 +472,9 @@ def dyn_check_9(
     input: _Tuple[
         DepType, DepType, DepType, DepType, DepType, DepType, DepType, DepType, DepType
     ],
-    output: DepType  # force line wrap
+    output: DepType
 ) -> _Callable[
-    [
-        _Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9], return_t]
-    ],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9], return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9], return_t],
 ]:
     return _dyn_check_unsafe(input=input, output=output)

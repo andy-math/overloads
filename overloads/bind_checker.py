@@ -18,9 +18,7 @@ _T9 = _TypeVar("_T9")
 
 
 def _bind_checker_unsafe(
-    *,
-    input: _Callable[[_Any], None],  # force line wrap
-    output: _Callable[[_return_t], None]
+    *, input: _Callable[[_Any], None], output: _Callable[[_return_t], None]
 ) -> _Callable[[_Callable[..., _return_t]], _Callable[..., _return_t]]:
     def decorator(f: _Callable[..., _return_t]) -> _Callable[..., _return_t]:
         @_wraps(f)
@@ -36,32 +34,26 @@ def _bind_checker_unsafe(
 
 
 def bind_checker_0(
-    *,
-    input: _Callable[[_Tuple[()]], None],  # force line wrap
-    output: _Callable[[_return_t], None]
+    *, input: _Callable[[_Tuple[()]], None], output: _Callable[[_return_t], None]
 ) -> _Callable[[_Callable[[], _return_t]], _Callable[[], _return_t]]:
     return _bind_checker_unsafe(input=input, output=output)
 
 
 def bind_checker_1(
-    *,
-    input: _Callable[[_Tuple[_T1]], None],  # force line wrap
-    output: _Callable[[_return_t], None]
+    *, input: _Callable[[_Tuple[_T1]], None], output: _Callable[[_return_t], None]
 ) -> _Callable[[_Callable[[_T1], _return_t]], _Callable[[_T1], _return_t]]:
     return _bind_checker_unsafe(input=input, output=output)
 
 
 def bind_checker_2(
-    *,
-    input: _Callable[[_Tuple[_T1, _T2]], None],  # force line wrap
-    output: _Callable[[_return_t], None]
+    *, input: _Callable[[_Tuple[_T1, _T2]], None], output: _Callable[[_return_t], None]
 ) -> _Callable[[_Callable[[_T1, _T2], _return_t]], _Callable[[_T1, _T2], _return_t]]:
     return _bind_checker_unsafe(input=input, output=output)
 
 
 def bind_checker_3(
     *,
-    input: _Callable[[_Tuple[_T1, _T2, _T3]], None],  # force line wrap
+    input: _Callable[[_Tuple[_T1, _T2, _T3]], None],
     output: _Callable[[_return_t], None]
 ) -> _Callable[
     [_Callable[[_T1, _T2, _T3], _return_t]], _Callable[[_T1, _T2, _T3], _return_t]
@@ -71,10 +63,10 @@ def bind_checker_3(
 
 def bind_checker_4(
     *,
-    input: _Callable[[_Tuple[_T1, _T2, _T3, _T4]], None],  # force line wrap
+    input: _Callable[[_Tuple[_T1, _T2, _T3, _T4]], None],
     output: _Callable[[_return_t], None]
 ) -> _Callable[
-    [_Callable[[_T1, _T2, _T3, _T4], _return_t]],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4], _return_t]],
     _Callable[[_T1, _T2, _T3, _T4], _return_t],
 ]:
     return _bind_checker_unsafe(input=input, output=output)
@@ -82,10 +74,10 @@ def bind_checker_4(
 
 def bind_checker_5(
     *,
-    input: _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5]], None],  # force line wrap
+    input: _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5]], None],
     output: _Callable[[_return_t], None]
 ) -> _Callable[
-    [_Callable[[_T1, _T2, _T3, _T4, _T5], _return_t]],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5], _return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5], _return_t],
 ]:
     return _bind_checker_unsafe(input=input, output=output)
@@ -93,10 +85,10 @@ def bind_checker_5(
 
 def bind_checker_6(
     *,
-    input: _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6]], None],  # force line wrap
+    input: _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6]], None],
     output: _Callable[[_return_t], None]
 ) -> _Callable[
-    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6], _return_t]],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6], _return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5, _T6], _return_t],
 ]:
     return _bind_checker_unsafe(input=input, output=output)
@@ -104,12 +96,10 @@ def bind_checker_6(
 
 def bind_checker_7(
     *,
-    input: _Callable[
-        [_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7]], None
-    ],  # force line wrap
+    input: _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7]], None],
     output: _Callable[[_return_t], None]
 ) -> _Callable[
-    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7], _return_t]],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7], _return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7], _return_t],
 ]:
     return _bind_checker_unsafe(input=input, output=output)
@@ -117,12 +107,10 @@ def bind_checker_7(
 
 def bind_checker_8(
     *,
-    input: _Callable[
-        [_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8]], None
-    ],  # force line wrap
+    input: _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8]], None],
     output: _Callable[[_return_t], None]
 ) -> _Callable[
-    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8], _return_t]],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8], _return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8], _return_t],
 ]:
     return _bind_checker_unsafe(input=input, output=output)
@@ -130,14 +118,10 @@ def bind_checker_8(
 
 def bind_checker_9(
     *,
-    input: _Callable[
-        [_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9]], None
-    ],  # force line wrap
+    input: _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9]], None],
     output: _Callable[[_return_t], None]
 ) -> _Callable[
-    [
-        _Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9], _return_t]
-    ],  # force line wrap
+    [_Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9], _return_t]],
     _Callable[[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9], _return_t],
 ]:
     return _bind_checker_unsafe(input=input, output=output)
