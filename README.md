@@ -14,7 +14,7 @@
 
     # `_2`表示输入参数为两个，映射到`input[T1, T2]`
     # varadic (like C++) 受PEP484限制无法实现
-    checkInfNaN_2 = bd_chk.make_checker_2(assertNoInfNaN)
+    checkInfNaN_2 = bd_chk.make_checker_2(assertNoInfNaN, assertNoInfNaN)
 
 
     def checkNone(_: None) -> None:
