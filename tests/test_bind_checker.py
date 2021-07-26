@@ -9,16 +9,54 @@ from overloads.shortcuts import assertNoInfNaN
 from overloads.typedefs import ndarray as NDArray
 
 checker = (
-    bind_checker.make_checker_0(assertNoInfNaN),
+    None,
     bind_checker.make_checker_1(assertNoInfNaN),
-    bind_checker.make_checker_2(assertNoInfNaN),
-    bind_checker.make_checker_3(assertNoInfNaN),
-    bind_checker.make_checker_4(assertNoInfNaN),
-    bind_checker.make_checker_5(assertNoInfNaN),
-    bind_checker.make_checker_6(assertNoInfNaN),
-    bind_checker.make_checker_7(assertNoInfNaN),
-    bind_checker.make_checker_8(assertNoInfNaN),
-    bind_checker.make_checker_9(assertNoInfNaN),
+    bind_checker.make_checker_2(assertNoInfNaN, assertNoInfNaN),
+    bind_checker.make_checker_3(assertNoInfNaN, assertNoInfNaN, assertNoInfNaN),
+    bind_checker.make_checker_4(
+        assertNoInfNaN, assertNoInfNaN, assertNoInfNaN, assertNoInfNaN
+    ),
+    bind_checker.make_checker_5(
+        assertNoInfNaN, assertNoInfNaN, assertNoInfNaN, assertNoInfNaN, assertNoInfNaN
+    ),
+    bind_checker.make_checker_6(
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+    ),
+    bind_checker.make_checker_7(
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+    ),
+    bind_checker.make_checker_8(
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+    ),
+    bind_checker.make_checker_9(
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+        assertNoInfNaN,
+    ),
 )
 
 dataOK = numpy.array([1.0])
@@ -27,7 +65,6 @@ dataERR = numpy.array([math.nan])
 
 class TestMaker:
     def test_maker(self) -> None:
-        checker[0](())
         checker[1]((dataOK,))
         checker[2]((dataOK, dataOK))
         checker[3]((dataOK, dataOK, dataOK))
@@ -118,12 +155,6 @@ def outcheck(_: None) -> None:
     return
 
 
-@tuplize.tuplize_0
-@bind_checker.bind_checker_0(output=outcheck)
-def f_0() -> None:
-    return
-
-
 @tuplize.tuplize_1
 @bind_checker.bind_checker_1(input=checker[1], output=outcheck)
 def f_1(a: NDArray) -> None:
@@ -199,12 +230,11 @@ def f_9(
     return
 
 
-checker2 = (f_0, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8, f_9)
+checker2 = (None, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8, f_9)
 
 
 class TestBinding:
     def test_1(self) -> None:
-        checker2[0](())
         checker2[1]((dataOK,))
         checker2[2]((dataOK, dataOK))
         checker2[3]((dataOK, dataOK, dataOK))

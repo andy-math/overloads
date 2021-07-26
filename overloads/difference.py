@@ -8,7 +8,8 @@ from overloads.typedefs import ndarray
 
 
 @bind_checker.bind_checker_2(
-    input=bind_checker.make_checker_2(assertNoInfNaN), output=assertNoInfNaN_float
+    input=bind_checker.make_checker_2(assertNoInfNaN, assertNoInfNaN),
+    output=assertNoInfNaN_float,
 )
 def relative(A: ndarray, B: ndarray) -> float:
     assert A.shape == B.shape
@@ -19,7 +20,8 @@ def relative(A: ndarray, B: ndarray) -> float:
 
 
 @bind_checker.bind_checker_2(
-    input=bind_checker.make_checker_2(assertNoInfNaN), output=assertNoInfNaN_float
+    input=bind_checker.make_checker_2(assertNoInfNaN, assertNoInfNaN),
+    output=assertNoInfNaN_float,
 )
 def absolute(A: ndarray, B: ndarray) -> float:
     assert A.shape == B.shape

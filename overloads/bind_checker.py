@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from functools import wraps as _wraps
 from typing import Any as _Any
+from typing import Callable
 from typing import Callable as _Callable
+from typing import Tuple
 from typing import Tuple as _Tuple
 from typing import TypeVar as _TypeVar
 
@@ -127,142 +129,97 @@ def bind_checker_9(
     return _bind_checker_unsafe(input=input, output=output)
 
 
-_checker_input_t = _TypeVar("_checker_input_t")
-
-
 def _make_checker_unsafe(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[[_Tuple[_checker_input_t, ...]], None]:
-    def checker(args: _Tuple[_checker_input_t, ...]) -> None:
-        for arg in args:
+    checkers: Tuple[_Callable[[_Any], None], ...]
+) -> _Callable[[_Tuple[_Any, ...]], None]:
+    def checker(args: _Tuple[_Any, ...]) -> None:
+        assert len(checkers) == len(args)
+        for f, arg in zip(checkers, args):
             f(arg)
 
     return checker
 
 
-def make_checker_0(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[[_Tuple[()]], None]:
-    return _make_checker_unsafe(f)
-
-
-def make_checker_1(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[[_Tuple[_checker_input_t]], None]:
-    return _make_checker_unsafe(f)
+def make_checker_1(f1: Callable[[_T1], None]) -> _Callable[[_Tuple[_T1]], None]:
+    return _make_checker_unsafe((f1,))
 
 
 def make_checker_2(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[[_Tuple[_checker_input_t, _checker_input_t]], None]:
-    return _make_checker_unsafe(f)
+    f1: Callable[[_T1], None], f2: Callable[[_T2], None]
+) -> _Callable[[_Tuple[_T1, _T2]], None]:
+    return _make_checker_unsafe((f1, f2))
 
 
 def make_checker_3(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[[_Tuple[_checker_input_t, _checker_input_t, _checker_input_t]], None]:
-    return _make_checker_unsafe(f)
+    f1: Callable[[_T1], None], f2: Callable[[_T2], None], f3: Callable[[_T3], None]
+) -> _Callable[[_Tuple[_T1, _T2, _T3]], None]:
+    return _make_checker_unsafe((f1, f2, f3))
 
 
 def make_checker_4(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[
-    [_Tuple[_checker_input_t, _checker_input_t, _checker_input_t, _checker_input_t]],
-    None,
-]:
-    return _make_checker_unsafe(f)
+    f1: Callable[[_T1], None],
+    f2: Callable[[_T2], None],
+    f3: Callable[[_T3], None],
+    f4: Callable[[_T4], None],
+) -> _Callable[[_Tuple[_T1, _T2, _T3, _T4]], None]:
+    return _make_checker_unsafe((f1, f2, f3, f4))
 
 
 def make_checker_5(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[
-    [
-        _Tuple[
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-        ]
-    ],
-    None,
-]:
-    return _make_checker_unsafe(f)
+    f1: Callable[[_T1], None],
+    f2: Callable[[_T2], None],
+    f3: Callable[[_T3], None],
+    f4: Callable[[_T4], None],
+    f5: Callable[[_T5], None],
+) -> _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5]], None]:
+    return _make_checker_unsafe((f1, f2, f3, f4, f5))
 
 
 def make_checker_6(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[
-    [
-        _Tuple[
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-        ]
-    ],
-    None,
-]:
-    return _make_checker_unsafe(f)
+    f1: Callable[[_T1], None],
+    f2: Callable[[_T2], None],
+    f3: Callable[[_T3], None],
+    f4: Callable[[_T4], None],
+    f5: Callable[[_T5], None],
+    f6: Callable[[_T6], None],
+) -> _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6]], None]:
+    return _make_checker_unsafe((f1, f2, f3, f4, f5, f6))
 
 
 def make_checker_7(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[
-    [
-        _Tuple[
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-        ]
-    ],
-    None,
-]:
-    return _make_checker_unsafe(f)
+    f1: Callable[[_T1], None],
+    f2: Callable[[_T2], None],
+    f3: Callable[[_T3], None],
+    f4: Callable[[_T4], None],
+    f5: Callable[[_T5], None],
+    f6: Callable[[_T6], None],
+    f7: Callable[[_T7], None],
+) -> _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7]], None]:
+    return _make_checker_unsafe((f1, f2, f3, f4, f5, f6, f7))
 
 
 def make_checker_8(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[
-    [
-        _Tuple[
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-        ]
-    ],
-    None,
-]:
-    return _make_checker_unsafe(f)
+    f1: Callable[[_T1], None],
+    f2: Callable[[_T2], None],
+    f3: Callable[[_T3], None],
+    f4: Callable[[_T4], None],
+    f5: Callable[[_T5], None],
+    f6: Callable[[_T6], None],
+    f7: Callable[[_T7], None],
+    f8: Callable[[_T8], None],
+) -> _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8]], None]:
+    return _make_checker_unsafe((f1, f2, f3, f4, f5, f6, f7, f8))
 
 
 def make_checker_9(
-    f: _Callable[[_checker_input_t], None]
-) -> _Callable[
-    [
-        _Tuple[
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-            _checker_input_t,
-        ]
-    ],
-    None,
-]:
-    return _make_checker_unsafe(f)
+    f1: Callable[[_T1], None],
+    f2: Callable[[_T2], None],
+    f3: Callable[[_T3], None],
+    f4: Callable[[_T4], None],
+    f5: Callable[[_T5], None],
+    f6: Callable[[_T6], None],
+    f7: Callable[[_T7], None],
+    f8: Callable[[_T8], None],
+    f9: Callable[[_T9], None],
+) -> _Callable[[_Tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8, _T9]], None]:
+    return _make_checker_unsafe((f1, f2, f3, f4, f5, f6, f7, f8, f9))
