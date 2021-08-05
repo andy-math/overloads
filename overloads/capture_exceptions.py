@@ -2,20 +2,9 @@
 from __future__ import annotations
 
 import copy
-import functools
 import traceback
 from types import TracebackType
-from typing import (
-    Callable,
-    Generic,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import Callable, Generic, List, Optional, Tuple, Type, TypeVar, Union
 
 param_t = TypeVar("param_t")
 return_t = TypeVar("return_t")
@@ -109,27 +98,6 @@ class _exception_capturer(Generic[param_t, return_t]):
         return True
 
 
-@overload
-def capture_exceptions(
-    *, catch: Exceptions_t = BaseException, without: Exceptions_t = ()
-) -> Callable[
-    [Callable[[param_t], return_t]],
-    Callable[[param_t], Union[return_t, Captured_Exception[param_t, return_t]]],
-]:
-    pass  # pragma: no cover
-
-
-@overload
-def capture_exceptions(
-    f: Callable[[param_t], return_t],
-    *,
-    catch: Exceptions_t = BaseException,
-    without: Exceptions_t = ()
-) -> Callable[[param_t], Union[return_t, Captured_Exception[param_t, return_t]]]:
-    pass  # pragma: no cover
-
-
-@overload
 def capture_exceptions(
     f: Callable[[param_t], return_t],
     arg: param_t,
@@ -137,47 +105,11 @@ def capture_exceptions(
     catch: Exceptions_t = BaseException,
     without: Exceptions_t = ()
 ) -> Union[return_t, Captured_Exception[param_t, return_t]]:
-    pass  # pragma: no cover
-
-
-def capture_exceptions(  # type: ignore
-    f: Optional[Callable[[param_t], return_t]] = None,
-    *args: param_t,
-    catch: Exceptions_t = BaseException,
-    without: Exceptions_t = ()
-) -> Union[
-    Callable[
-        [Callable[[param_t], return_t]],
-        Callable[[param_t], Union[return_t, Captured_Exception[param_t, return_t]]],
-    ],
-    Callable[[param_t], Union[return_t, Captured_Exception[param_t, return_t]]],
-    return_t,
-    Captured_Exception[param_t, return_t],
-]:
-
-    assert len(args) <= 1
-
-    def wraps(
-        f: Callable[[param_t], return_t], *, wraps: bool
-    ) -> Callable[[param_t], Union[return_t, Captured_Exception[param_t, return_t]]]:
-        def capturer(
-            param: param_t,
-        ) -> Union[return_t, Captured_Exception[param_t, return_t]]:
-            cap = _exception_capturer(f, catch=catch, without=without)
-            with cap:
-                return cap(param)
-            assert cap.ce is not None
-            return cap.ce
-
-        return functools.wraps(f)(capturer) if wraps else capturer
-
-    if f is None:
-        assert not len(args)
-        return lambda f: wraps(f, wraps=True)
-    elif not len(args):
-        return wraps(f, wraps=False)
-    else:
-        return wraps(f, wraps=False)(*args)
+    cap = _exception_capturer(f, catch=catch, without=without)
+    with cap:
+        return cap(arg)
+    assert cap.ce is not None
+    return cap.ce
 
 
 def map(

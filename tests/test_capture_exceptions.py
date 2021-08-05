@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import pickle
-from typing import Callable, cast
 
 from overloads import capture_exceptions
 
@@ -62,39 +60,6 @@ class Test:
         assert ce_list[0].exception.args[0] == "将返回自身"
         assert ce_list[1] == 4
 
-    def test_picklable(self) -> None:
-        """
-        包装器伪装为原f，pickle后从真正的原函数进行load，
-        触发save函数体与load结果不同的异常
-        """
-        ce = capture_exceptions.capture_exceptions(
-            lambda _: cast(
-                Callable[[int], int],
-                pickle.loads(pickle.dumps(capture_exceptions.capture_exceptions()(f))),
-            )(1),
-            (),
-        )
-        assert isinstance(ce, capture_exceptions.Captured_Exception)
-        assert isinstance(ce.exception, pickle.PicklingError)
-        assert isinstance(ce.exception.args[0], str)
-        assert ce.exception.args[0].startswith("Can't pickle")
-        assert "it's not the same object as" in ce.exception.args[0]
-        """
-        没有包装伪装，则save/load不可用
-        """
-        ce = capture_exceptions.capture_exceptions(
-            lambda _: cast(
-                Callable[[int], int],
-                pickle.loads(pickle.dumps(capture_exceptions.capture_exceptions(f))),
-            )(1),
-            (),
-        )
-        assert isinstance(ce, capture_exceptions.Captured_Exception)
-        assert isinstance(ce.exception, AttributeError)
-        assert isinstance(ce.exception.args[0], str)
-        assert ce.exception.args[0].startswith("Can't pickle local object")
-        assert ".<locals>" in ce.exception.args[0]
-
 
 if __name__ == "__main__":
     t = Test()
@@ -104,4 +69,3 @@ if __name__ == "__main__":
     t.test_正常情形()
     t.test_过滤Without()
     t.test_重放()
-    t.test_picklable()
