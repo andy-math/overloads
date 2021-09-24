@@ -12,15 +12,12 @@ jobs:
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        # Semantic version range syntax or exact version of a Python version
         python-version: '3.9'
-        # Optional - x64 or x86 architecture, defaults to x64
         architecture: 'x64'
     - name: Cache pip
       uses: actions/cache@v2
       with:
         path: ~\AppData\Local\pip\Cache
-        # Look to see if there is a cache hit for the corresponding requirements file
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
