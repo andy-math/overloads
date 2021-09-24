@@ -1,5 +1,4 @@
 appdirs==1.4.4
-appnope==0.1.2
 atomicwrites==1.4.0
 attrs==21.2.0
 backcall==0.2.0
@@ -45,7 +44,6 @@ packaging==21.0
 pandas==1.3.3
 parso==0.8.2
 pathspec==0.9.0
-pexpect==4.8.0
 pickleshare==0.7.5
 Pillow==8.3.2
 pipdeptree==2.1.0
@@ -53,7 +51,6 @@ pluggy==1.0.0
 pretty-errors==1.2.24
 prompt-toolkit==3.0.20
 psutil==5.8.0
-ptyprocess==0.7.0
 py==1.10.0
 pycodestyle==2.7.0
 pyflakes==2.3.1
