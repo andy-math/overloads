@@ -45,14 +45,18 @@
     >>> from overloads import capture_exceptions as ce
 
     >>> def f(a: int) -> int:
-    ...     assert a != 1
+    ...     assert a != 1, "input value 1 is invalid"
     ...     return a
 
-    >>> A = ce.capture_exceptions(f, 0)
-    >>> assert A == 0
-    >>> B = ce.capture_exceptions(f, 1)  # catch=default(BaseException), without=default(tuple())
-    >>> assert type(B) is ce.Captured_Exception
+    >>> print(ce.capture_exceptions(f, 0))
+    0
 
+    >>> print(ce.capture_exceptions(f, 1))  # catch=default(BaseException), without=default(tuple())
+    Captured_Exception(f=__main__.f, args=(1,), e=AssertionError) with the following exception:
+        input value 1 is invalid
+      traceback:
+        ...
+        
     ```
     #### `map`
     ```python
