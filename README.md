@@ -178,6 +178,25 @@
 
         ```
 
+    + `isunique`
+        ```python
+        >>> from overloads.shortcuts import isunique
+        >>> import numpy
+        >>> isunique([0, 1, 2])
+        True
+        >>> isunique([0, 1, 2, 2])
+        False
+        >>> isunique((0, 1, 2)) # tuple
+        True
+        >>> isunique(numpy.array([0, 1, 2, 2])) # numpy 1d
+        False
+        >>> isunique(numpy.array([[1, 2], [2, 1]])) # ndarray is invalid
+        Traceback (most recent call last):
+            ...
+        TypeError: unhashable type: 'numpy.ndarray'
+
+        ```
+
 * ### tuplize
     #### 多元函数转化为一元`tuple`函数
     ```python
