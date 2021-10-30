@@ -136,8 +136,11 @@
     ...     return a * a
     >>> # callback=default(None)
     >>> parfor(f, range(5))  # doctest:+SKIP
-    
-    ...
+    0
+    4
+    3
+    1
+    2
     [0, 1, 4, 9, 16]
 
     ```
