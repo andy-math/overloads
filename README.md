@@ -58,12 +58,12 @@
     ```python
     >>> from overloads import capture_exceptions as ce
     >>> def f(a: int) -> int:
-    ...     assert a != 1
+    ...     assert a != 1, "input value 1 is invalid"
     ...     return a
     ...
     >>> ce.map(f, range(10))
     [1]: Captured_Exception(f=__main__.f, args=(1,), e=AssertionError) with the following exception:
-    <BLANKLINE>
+        input value 1 is invalid
       traceback:
         ...
     [0, <...Captured_Exception object at ...>, 2, 3, 4, 5, 6, 7, 8, 9]
