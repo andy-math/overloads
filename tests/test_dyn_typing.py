@@ -2,6 +2,7 @@
 from typing import Any
 
 import numpy
+
 from overloads import dyn_typing, tuplize
 from overloads.capture_exceptions import Captured_Exception, capture_exceptions
 from overloads.dyn_typing import SizeConst, SizeVar
@@ -16,11 +17,15 @@ class Test:
         assert not T.isinstance(numpy.zeros((2, 4, 5)))
         assert not T.isinstance(1)
         assert T.isinstance(numpy.zeros((2, 4), order="F"))
-        a = SizeVar()
-        T = dyn_typing.NDArray(numpy.float64, (a, a + 1))
-        assert T.isinstance(numpy.zeros((2, 3)))
-        assert T.isinstance(numpy.zeros((3, 4)))
-        assert not T.isinstance(numpy.zeros((3, 3)))
+        n = SizeVar()
+        T = dyn_typing.NDArray(numpy.float64, (n, n))
+        assert T.isinstance(numpy.zeros((1, 1)))
+        assert T.isinstance(numpy.zeros((2, 2)))
+        assert T.isinstance(numpy.zeros((3, 3)))
+        assert not T.isinstance(numpy.zeros((1, 2)))
+        assert not T.isinstance(numpy.zeros((2, 1)))
+        assert not T.isinstance(numpy.zeros((3, 2)))
+        assert not T.isinstance(numpy.zeros((3, 4)))
 
     def test_Bool(self) -> None:
         assert dyn_typing.Bool().isinstance(True)
@@ -71,13 +76,6 @@ class Test:
         assert not T.isinstance([1, 1.0])
         assert T.isinstance([1, 1])
         assert not T.isinstance(None)
-        a = SizeVar()
-        aExpr = a * 2
-        T = dyn_typing.List(Int, aExpr)
-        assert a.eqn(1)
-        assert T.isinstance([1, 1])
-        assert a.eqn(1)
-        assert not T.isinstance([1, 1, 1])
 
     def test_Tuple(self) -> None:
         Int = dyn_typing.Int()
@@ -94,25 +92,6 @@ class Test:
         assert not T.isinstance({"a": 1, "b": 1})
         assert not T.isinstance({"a": 1, "c": 1.0})
         assert not T.isinstance([])
-
-    def test_Expr(self) -> None:
-        a = SizeConst(4)
-        assert (-a).eqn(-4)
-        assert (a + 3).eqn(4 + 3)
-        assert (a - 3).eqn(4 - 3)
-        assert (a * 3).eqn(4 * 3)
-        assert (a / 2).eqn(int(4 / 2))
-        assert (a // 3).eqn(4 // 3)
-        assert (a % 3).eqn(4 % 3)
-        assert (a ** 3).eqn(int(4 ** 3))
-        assert (3 + a).eqn(3 + 4)
-        assert (3 - a).eqn(3 - 4)
-        assert (3 * a).eqn(3 * 4)
-        assert (8 / a).eqn(int(8 / 4))
-        assert (3 // a).eqn(3 // 4)
-        assert (3 % a).eqn(3 % 4)
-        assert (3 ** a).eqn(int(3 ** 4))
-        assert (a + a + a).eqn(4 + 4 + 4)
 
 
 dynInt = dyn_typing.Int()

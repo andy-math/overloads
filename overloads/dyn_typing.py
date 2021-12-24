@@ -16,147 +16,20 @@ from typing import Union as _Union
 import numpy as _numpy
 
 
-def _get_value(value: _Union[int, float, DepSize]) -> _Union[int, float]:
-    if isinstance(value, (int, float)):
-        return value
-    elif isinstance(value, SizeConst):
-        return value.value
-    elif isinstance(value, SizeVar):
-        assert value.value is not None
-        return value.value
-    else:
-        assert isinstance(value, SizeExpr)
-        assert value.expr is not None
-        return value.expr()
-
-
 def _make_using(*values: _Union[int, float, DepSize, DepType]) -> _Set[SizeVar]:
     using: _Set[SizeVar] = set()
     for value in values:
         if isinstance(value, SizeVar):
             using.add(value)
-        elif isinstance(value, (SizeExpr, DepType)):
+        elif isinstance(value, DepType):
             using.update(value.using)
     return using
 
 
-class _DepSize(metaclass=_abc.ABCMeta):
+class DepSize(metaclass=_abc.ABCMeta):
     @_abc.abstractmethod
     def eqn(self, value: int) -> bool:
         pass  # pragma: no cover
-
-
-class DepSize(_DepSize, metaclass=_abc.ABCMeta):  # 算术运算支持
-    def __neg__(self) -> SizeExpr:
-        def neg() -> _Union[int, float]:
-            return -_get_value(self)
-
-        return SizeExpr(_make_using(self), neg)
-
-    def __add__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def add() -> _Union[int, float]:
-            return _get_value(self) + _get_value(value)
-
-        return SizeExpr(_make_using(self, value), add)
-
-    def __sub__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def sub() -> _Union[int, float]:
-            return _get_value(self) - _get_value(value)
-
-        return SizeExpr(_make_using(self, value), sub)
-
-    def __mul__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def mul() -> _Union[int, float]:
-            return _get_value(self) * _get_value(value)
-
-        return SizeExpr(_make_using(self, value), mul)
-
-    def __floordiv__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def floordiv() -> _Union[int, float]:
-            return _get_value(self) // _get_value(value)
-
-        return SizeExpr(_make_using(self, value), floordiv)
-
-    def __truediv__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def truediv() -> _Union[int, float]:
-            return _get_value(self) / _get_value(value)
-
-        return SizeExpr(_make_using(self, value), truediv)
-
-    def __mod__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def mod() -> _Union[int, float]:
-            return _get_value(self) % _get_value(value)
-
-        return SizeExpr(_make_using(self, value), mod)
-
-    def __pow__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def pow() -> _Union[int, float]:
-            return _get_value(self) ** _get_value(value)
-
-        return SizeExpr(_make_using(self, value), pow)
-
-    def __radd__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def radd() -> _Union[int, float]:
-            return _get_value(value) + _get_value(self)
-
-        return SizeExpr(_make_using(self, value), radd)
-
-    def __rsub__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def rsub() -> _Union[int, float]:
-            return _get_value(value) - _get_value(self)
-
-        return SizeExpr(_make_using(self, value), rsub)
-
-    def __rmul__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def rmul() -> _Union[int, float]:
-            return _get_value(value) * _get_value(self)
-
-        return SizeExpr(_make_using(self, value), rmul)
-
-    def __rfloordiv__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def rfloordiv() -> _Union[int, float]:
-            return _get_value(value) // _get_value(self)
-
-        return SizeExpr(_make_using(self, value), rfloordiv)
-
-    def __rtruediv__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def rtruediv() -> _Union[int, float]:
-            return _get_value(value) / _get_value(self)
-
-        return SizeExpr(_make_using(self, value), rtruediv)
-
-    def __rmod__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def rmod() -> _Union[int, float]:
-            return _get_value(value) % _get_value(self)
-
-        return SizeExpr(_make_using(self, value), rmod)
-
-    def __rpow__(self, value: _Union[int, float, DepSize]) -> SizeExpr:
-        def rpow() -> _Union[int, float]:
-            return _get_value(value) ** _get_value(self)
-
-        return SizeExpr(_make_using(self, value), rpow)
-
-
-class SizeExpr(DepSize):
-    using: _Set[SizeVar]
-    expr: _Optional[_Callable[[], _Union[int, float]]]
-
-    def __init__(
-        self,
-        using: _Set[SizeVar],
-        expr: _Callable[[], _Union[int, float]],
-    ) -> None:
-        self.using = using
-        self.expr = expr
-
-    def eqn(self, value: int) -> bool:
-        assert self.expr is not None
-        return self.expr() == value
-
-    def check_using(self) -> None:
-        for s in self.using:
-            assert s.value is not None
 
 
 class SizeVar(DepSize):
@@ -209,8 +82,6 @@ class NDArray(DepType):
         if len(value.shape) != len(self.shape):
             return False
         for a, b in zip(value.shape, self.shape):
-            if isinstance(b, SizeExpr):
-                b.check_using()
             if not b.eqn(a):
                 return False
         return True
@@ -255,8 +126,6 @@ class List(DepType):
     def _isinstance(self, value: _Any) -> bool:
         if not isinstance(value, list):
             return False
-        if isinstance(self.len, SizeExpr):
-            self.len.check_using()
         if not self.len.eqn(len(value)):
             return False
         for v in value:
