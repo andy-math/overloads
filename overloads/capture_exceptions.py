@@ -93,8 +93,9 @@ class _exception_capturer(Generic[param_t, return_t]):
             return False
         e = __exc_value
         trace = "".join(traceback.format_tb(__traceback))
-        assert self.f is not None
-        self.ce = Captured_Exception(self.f, self.arg, e, trace)
+        func = self.f
+        assert func is not None
+        self.ce = Captured_Exception(func, self.arg, e, trace)
         return True
 
 

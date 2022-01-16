@@ -34,7 +34,7 @@ def ff(a: int) -> None:
     print(multiprocessing.current_process().ident)
 
 
-ident_set = set()
+ident_set: set[int] = set()
 
 
 def callback(

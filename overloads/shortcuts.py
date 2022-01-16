@@ -5,7 +5,7 @@ import datetime
 import math
 import os
 import pickle
-from typing import Any, Collection, Optional, Tuple, TypeVar
+from typing import Any, Collection, Optional, Tuple
 
 import numpy
 
@@ -56,8 +56,5 @@ def assertNoInfNaN_float(x: float) -> None:
     assert math.isfinite(x), ("出现了Inf或NaN", x)
 
 
-T = TypeVar("T")
-
-
-def isunique(x: Collection[T]) -> bool:
+def isunique(x: Collection[Any]) -> bool:
     return len(set(x)) == len(x)

@@ -5,7 +5,7 @@ import datetime
 import multiprocessing
 import multiprocessing.pool
 import multiprocessing.synchronize
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, TypeVar, Union
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, TypeVar, Union, cast
 
 import psutil  # type: ignore
 
@@ -72,7 +72,14 @@ def parfor(
     num_total = len(arg_list)
     num_finished = 0
     time_start = datetime.datetime.now()
-    for idx, result in pool.imap_unordered(parfor_helper, helper_arg_list):
+    helper = cast(
+        Callable[
+            [Tuple[int, Callable[[param_t], return_t], param_t]],
+            Tuple[int, Union[return_t, Captured_Exception[param_t, return_t]]],
+        ],
+        parfor_helper,
+    )
+    for idx, result in pool.imap_unordered(helper, helper_arg_list):
         num_finished += 1
         time_now = datetime.datetime.now()
         time_elapsed = time_now - time_start
@@ -108,7 +115,9 @@ def forall_helper(info_tuple: Tuple[Callable[[param_t], None], param_t]) -> None
 
 def forall(f: Callable[[param_t], None], arg_list: param_t) -> None:
     parfor(
-        forall_helper,
+        cast(
+            Callable[[Tuple[Callable[[param_t], None], param_t]], None], forall_helper
+        ),
         [(f, arg_list) for _ in range(psutil.cpu_count(logical=False))],
     )
     assert barrier is not None
